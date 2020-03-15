@@ -65,14 +65,14 @@
   </url>
   
   <url>
-    <loc>/categories/%E7%AE%97%E6%B3%95/</loc>
+    <loc>/tags/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-06-21T14:20:34+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>/tags/%E7%AE%97%E6%B3%95/</loc>
+    <loc>/categories/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-06-21T14:20:34+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
