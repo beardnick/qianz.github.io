@@ -14,7 +14,9 @@ tags:
 
 ### 1. 在idea的project structure中配置test目录
 
-![test](/test.png)
+![test](test.png)
+
+<!--more-->
 
 
 ### 2. 加入如下注解
