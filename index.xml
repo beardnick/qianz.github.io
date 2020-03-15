@@ -2,29 +2,29 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>千舟</title>
-    <link>https://beardnick.github.io/qianz.github.io/</link>
+    <link>/</link>
     <description>Recent content on 千舟</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Sat, 29 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://beardnick.github.io/qianz.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SpringBoot单元测试</title>
-      <link>https://beardnick.github.io/qianz.github.io/post/java/springboottest/</link>
+      <link>/post/java/springboottest/</link>
       <pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://beardnick.github.io/qianz.github.io/post/java/springboottest/</guid>
+      <guid>/post/java/springboottest/</guid>
       <description>测试环境配置 1. 在idea的project structure中配置test目录 2. 加入如下注解 1 2 @RunWith(SpringRunner.class) @SpringBootTest(classes = DeepApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) @RunWith: 是指使用哪一个类来运行单元测试</description>
     </item>
     
     <item>
       <title>红黑树</title>
-      <link>https://beardnick.github.io/qianz.github.io/post/%E7%AE%97%E6%B3%95/%E7%BA%A2%E9%BB%91%E6%A0%91/</link>
+      <link>/post/%E7%AE%97%E6%B3%95/%E7%BA%A2%E9%BB%91%E6%A0%91/</link>
       <pubDate>Fri, 21 Jun 2019 14:20:34 +0000</pubDate>
       
-      <guid>https://beardnick.github.io/qianz.github.io/post/%E7%AE%97%E6%B3%95/%E7%BA%A2%E9%BB%91%E6%A0%91/</guid>
+      <guid>/post/%E7%AE%97%E6%B3%95/%E7%BA%A2%E9%BB%91%E6%A0%91/</guid>
       <description>&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
 &lt;h3 id=&#34;基本特点&#34;&gt;基本特点&lt;/h3&gt;
 &lt;p&gt;红黑树最突出的特点在于它的每个结点除了数值之外还多了一个颜色属性，该属性要么为黑要么为红，这也是其名字的由来.&lt;/p&gt;
@@ -43,7 +43,7 @@
 &lt;h3 id=&#34;单旋转&#34;&gt;单旋转&lt;/h3&gt;
 &lt;p&gt;单旋转分为左旋和右旋，两者行为对称，这里只说左旋
 可以想象为AB连线中心有一个点被固定了，然后绕着那个点逆时针旋转，这样B就替代了A的位置&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://beardnick.github.io/qianz.github.io/single_spin.jpg&#34; alt=&#34;左旋&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;/single_spin.jpg&#34; alt=&#34;左旋&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

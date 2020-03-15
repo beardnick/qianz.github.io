@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>springboot on 千舟</title>
-    <link>https://beardnick.github.io/qianz.github.io/tags/springboot/</link>
+    <link>/tags/springboot/</link>
     <description>Recent content in springboot on 千舟</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Sat, 29 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://beardnick.github.io/qianz.github.io/tags/springboot/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/springboot/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SpringBoot单元测试</title>
-      <link>https://beardnick.github.io/qianz.github.io/post/java/springboottest/</link>
+      <link>/post/java/springboottest/</link>
       <pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://beardnick.github.io/qianz.github.io/post/java/springboottest/</guid>
+      <guid>/post/java/springboottest/</guid>
       <description>测试环境配置 1. 在idea的project structure中配置test目录 2. 加入如下注解 1 2 @RunWith(SpringRunner.class) @SpringBootTest(classes = DeepApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) @RunWith: 是指使用哪一个类来运行单元测试</description>
     </item>
     
