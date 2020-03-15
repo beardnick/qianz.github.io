@@ -34,7 +34,7 @@
 &lt;h3 id=&#34;单旋转&#34;&gt;单旋转&lt;/h3&gt;
 &lt;p&gt;单旋转分为左旋和右旋，两者行为对称，这里只说左旋
 可以想象为AB连线中心有一个点被固定了，然后绕着那个点逆时针旋转，这样B就替代了A的位置&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://beardnick.github.io/qianz.github.io/single_spin.jpg&#34; alt=&#34;左旋&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;single_spin.jpg&#34; alt=&#34;左旋&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

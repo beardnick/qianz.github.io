@@ -12,11 +12,13 @@
     
     <item>
       <title>SpringBoot单元测试</title>
-      <link>https://beardnick.github.io/qianz.github.io/post/java/springboottest/</link>
+      <link>https://beardnick.github.io/qianz.github.io/post/Java/springboottest/</link>
       <pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://beardnick.github.io/qianz.github.io/post/java/springboottest/</guid>
-      <description>测试环境配置 1. 在idea的project structure中配置test目录 2. 加入如下注解 1 2 @RunWith(SpringRunner.class) @SpringBootTest(classes = DeepApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) @RunWith: 是指使用哪一个类来运行单元测试</description>
+      <guid>https://beardnick.github.io/qianz.github.io/post/Java/springboottest/</guid>
+      <description>&lt;h1 id=&#34;测试环境配置&#34;&gt;测试环境配置&lt;/h1&gt;
+&lt;h3 id=&#34;1-在idea的project-structure中配置test目录&#34;&gt;1. 在idea的project structure中配置test目录&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;test.png&#34; alt=&#34;test&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -43,7 +45,7 @@
 &lt;h3 id=&#34;单旋转&#34;&gt;单旋转&lt;/h3&gt;
 &lt;p&gt;单旋转分为左旋和右旋，两者行为对称，这里只说左旋
 可以想象为AB连线中心有一个点被固定了，然后绕着那个点逆时针旋转，这样B就替代了A的位置&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://beardnick.github.io/qianz.github.io/single_spin.jpg&#34; alt=&#34;左旋&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;single_spin.jpg&#34; alt=&#34;左旋&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

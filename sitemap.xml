@@ -9,7 +9,7 @@
   </url>
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/categories/java/</loc>
+    <loc>https://beardnick.github.io/qianz.github.io/categories/Java/</loc>
     <lastmod>2020-02-29T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -37,7 +37,7 @@
   </url>
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/post/java/springboottest/</loc>
+    <loc>https://beardnick.github.io/qianz.github.io/post/Java/springboottest/</loc>
     <lastmod>2020-02-29T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -65,14 +65,14 @@
   </url>
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/tags/%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://beardnick.github.io/qianz.github.io/categories/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-06-21T14:20:34+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/categories/%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://beardnick.github.io/qianz.github.io/tags/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-06-21T14:20:34+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

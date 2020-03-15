@@ -26,7 +26,7 @@
 单旋转分为左旋和右旋，两者行为对称，这里只说左旋
 可以想象为AB连线中心有一个点被固定了，然后绕着那个点逆时针旋转，这样B就替代了A的位置
 
-![左旋](/single_spin.jpg)
+![左旋](single_spin.jpg)
 
 
 <!--more-->
@@ -35,7 +35,7 @@
 
 双旋转由两个单旋转组成
 
-![双旋](/double_spin.jpg)
+![双旋](double_spin.jpg)
 
 
 ## 一些小证明
@@ -43,8 +43,8 @@
 ### <a name="no_double_length_row">为什么没有一条路径会比另外一条路径长出两倍?</a>
 
 每条路径中黑色结点数相同，当一条路径是另外一条路径长度的两倍时，那么只有可能是短路径全是黑色节点，长路径一半黑一半红，而且红黑要刚好互相间隔开，不然就会违反不能有两个连续的红的结点的规则。
-![double_length](/double.jpg)
+![double_length](double.jpg)
 如果一条路径长于另外一条路径两倍，那么不论如何长路径都会有两个连续红色。
-![more_than_double_length](/double1.jpg)
+![more_than_double_length](double1.jpg)
 
 未完待续
