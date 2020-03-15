@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: sitemap.xml
+Sitemap: https://beardnick.github.io/qianz.github.io/sitemap.xml
