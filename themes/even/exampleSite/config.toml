@@ -1,7 +1,7 @@
-#baseURL = "http://example.org/"
-#baseURL = "https://beardnick.github.io/qianz.github.io/"
+baseURL = "http://localhost:1313/"
+languageCode = "en"
 defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
-title = "千舟"
+title = "Even - A super concise theme for Hugo"
 preserveTaxonomyNames = true
 enableRobotsTXT = true
 enableEmoji = true
@@ -21,7 +21,7 @@ googleAnalytics = ""      # UA-XXXXXXXX-X
 copyright = ""            # default: author.name ↓        # 默认为下面配置的author.name ↓
 
 [author]                  # essential                     # 必需
-  name = "千舟"
+  name = "olOwOlo"
 
 [sitemap]                 # essential                     # 必需
   changefreq = "weekly"
@@ -53,13 +53,13 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   version = "4.x"           # Used to give a friendly message when you have an incompatible update
   debug = false             # If true, load `eruda.min.js`. See https://github.com/liriliri/eruda
 
-  since = "2020"            # Site creation time          # 站点建立时间
+  since = "2017"            # Site creation time          # 站点建立时间
   # use public git repo url to link lastmod git commit, enableGitInfo should be true.
   # 指定 git 仓库地址，可以生成指向最近更新的 git commit 的链接，需要将 enableGitInfo 设置成 true.
   gitRepo = ""
 
   # site info (optional)                                  # 站点信息（可选，不需要的可以直接注释掉）
-  logoTitle = "qianz"        # default: the title value    # 默认值: 上面设置的title值
+  logoTitle = "Even"        # default: the title value    # 默认值: 上面设置的title值
   keywords = ["Hugo", "theme","even"]
   description = "Hugo theme even example site."
 
@@ -67,13 +67,13 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   archivePaginate = 5
 
   # show 'xx Posts In Total' in archive page ?            # 是否在归档页显示文章的总数
-  showArchiveCount = true
+  showArchiveCount = false
 
   # The date format to use; for a list of valid formats, see https://gohugo.io/functions/format/
   dateFormatToUse = "2006-01-02"
 
   # show word count and read time ?                       # 是否显示字数统计与阅读时间
-  moreMeta = true
+  moreMeta = false
 
   # Syntax highlighting by highlight.js
   highlightInClient = false
@@ -85,9 +85,9 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   fancybox = true           # see https://github.com/fancyapps/fancybox                 # 是否启用fancybox（图片可点击）
 
   # mathjax
-  mathjax = true           # see https://www.mathjax.org/                              # 是否使用mathjax（数学公式）
-  mathjaxEnableSingleDollar = true                                                     # 是否使用 $...$ 即可進行inline latex渲染
-  mathjaxEnableAutoNumber = true                                                       # 是否使用公式自动编号
+  mathjax = false           # see https://www.mathjax.org/                              # 是否使用mathjax（数学公式）
+  mathjaxEnableSingleDollar = false                                                     # 是否使用 $...$ 即可進行inline latex渲染
+  mathjaxEnableAutoNumber = false                                                       # 是否使用公式自动编号
   mathjaxUseLocalFiles = false  # You should install mathjax in `your-site/static/lib/mathjax`
 
   postMetaInFooter = true   # contain author, lastMod, markdown link, license           # 包含作者，上次修改时间，markdown链接，许可信息
@@ -168,7 +168,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
     options = ""            # default: "{theme: 'simple'}"
 
   [params.busuanzi]         # count web traffic by busuanzi                             # 是否使用不蒜子统计站点访问量
-    enable = true
+    enable = false
     siteUV = true
     sitePV = true
     pagePV = true
@@ -179,15 +179,15 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
     alipay = "/path/to/your/alipay-qr-code.png"           # 支付宝二维码
 
   [params.social]                                         # 社交链接
-    a-email = "mailto:1685437606@qq.com"
+    a-email = "mailto:your@email.com"
     b-stack-overflow = "http://localhost:1313"
     c-twitter = "http://localhost:1313"
     d-facebook = "http://localhost:1313"
     e-linkedin = "http://localhost:1313"
     f-google = "http://localhost:1313"
-    g-github = "https://github.com/beardnick"
+    g-github = "http://localhost:1313"
     h-weibo = "http://localhost:1313"
-    i-zhihu = "https://www.zhihu.com/people/qian-zhou-64-73"
+    i-zhihu = "http://localhost:1313"
     j-douban = "http://localhost:1313"
     k-pocket = "http://localhost:1313"
     l-tumblr = "http://localhost:1313"
@@ -204,18 +204,18 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
 
 # 将下面这段配置取消注释可以使 hugo 生成 .md 文件
 # Uncomment these options to make hugo output .md files.
-[mediaTypes]
-  [mediaTypes."text/plain"]
-    suffixes = ["md"]
-
-[outputFormats.MarkDown]
-  mediaType = "text/plain"
-  isPlainText = true
-  isHTML = false
-
-[outputs]
-  home = ["HTML", "RSS"]
-  page = ["HTML", "MarkDown"]
-  section = ["HTML", "RSS"]
-  taxonomy = ["HTML", "RSS"]
-  taxonomyTerm = ["HTML"]
+#[mediaTypes]
+#  [mediaTypes."text/plain"]
+#    suffixes = ["md"]
+#
+#[outputFormats.MarkDown]
+#  mediaType = "text/plain"
+#  isPlainText = true
+#  isHTML = false
+#
+#[outputs]
+#  home = ["HTML", "RSS"]
+#  page = ["HTML", "MarkDown"]
+#  section = ["HTML", "RSS"]
+#  taxonomy = ["HTML", "RSS"]
+#  taxonomyTerm = ["HTML"]
