@@ -1,5 +1,5 @@
 #baseURL = "http://example.org/"
-baseURL = "http://beardnick.github.io/hugo_gh_blog"
+baseURL = "https://beardnick.github.io/qianz.github.io/"
 defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
 title = "千舟"
 preserveTaxonomyNames = true
