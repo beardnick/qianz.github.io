@@ -17,7 +17,7 @@
 
 
 <meta name="author" content="千舟" /><meta name="description" content="简介 基本特点 红黑树最突出的特点在于它的每个结点除了数值之外还多了一个颜色属性，该属性要么为黑要么为红，这也是其名字的由来.
-性质  每个结点为红或者黑色 根结点必须为黑色 每个叶结点为黑色(叶结点可以表示为null或nil，叶结点一般省略不画在图上) 如果一个结点为红色，则其子结点必须为黑色（也就是不能有两个连续的红色结点） 每个结点到其子树的叶子结点的所有简单路径上的黑色结点数相同（这个数目被称为以该节点为根的树的黑高)  这些性质的引入是为了保证红黑树整体上处于一种相对来说比较平衡的状态，因为这些性质确保了没有一条路径会比另外一条路径长出两倍. 为什么呢？
+性质 每个结点为红或者黑色 根结点必须为黑色 每个叶结点为黑色(叶结点可以表示为null或nil，叶结点一般省略不画在图上) 如果一个结点为红色，则其子结点必须为黑色（也就是不能有两个连续的红色结点） 每个结点到其子树的叶子结点的所有简单路径上的黑色结点数相同（这个数目被称为以该节点为根的树的黑高) 这些性质的引入是为了保证红黑树整体上处于一种相对来说比较平衡的状态，因为这些性质确保了没有一条路径会比另外一条路径长出两倍. 为什么呢？
 拥有了这样的平衡性，红黑树基本的查找、插入删除操作的时间复杂度都为O(lgn)
 基本操作 单旋转 单旋转分为左旋和右旋，两者行为对称，这里只说左旋 可以想象为AB连线中心有一个点被固定了，然后绕着那个点逆时针旋转，这样B就替代了A的位置
 " /><meta name="keywords" content="Hugo, theme, even" />
@@ -27,7 +27,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.64.1 with theme even" />
+<meta name="generator" content="Hugo 0.111.3 with theme even" />
 
 
 <link rel="canonical" href="https://beardnick.github.io/qianz.github.io/post/%E7%AE%97%E6%B3%95/%E7%BA%A2%E9%BB%91%E6%A0%91/" />
@@ -38,7 +38,8 @@
 <link rel="mask-icon" href="/qianz.github.io/safari-pinned-tab.svg" color="#5bbad5">
 
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<link href="/qianz.github.io/dist/even.c2a46f00.min.css" rel="stylesheet">
+
+<link href="/qianz.github.io/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -63,7 +64,7 @@
 可以想象为AB连线中心有一个点被固定了，然后绕着那个点逆时针旋转，这样B就替代了A的位置
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://beardnick.github.io/qianz.github.io/post/%E7%AE%97%E6%B3%95/%E7%BA%A2%E9%BB%91%E6%A0%91/" />
+<meta property="og:url" content="https://beardnick.github.io/qianz.github.io/post/%E7%AE%97%E6%B3%95/%E7%BA%A2%E9%BB%91%E6%A0%91/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2019-06-21T14:20:34+00:00" />
 <meta property="article:modified_time" content="2019-06-21T14:20:34+00:00" />
 <meta itemprop="name" content="红黑树">
@@ -85,13 +86,9 @@
 单旋转
 单旋转分为左旋和右旋，两者行为对称，这里只说左旋
 可以想象为AB连线中心有一个点被固定了，然后绕着那个点逆时针旋转，这样B就替代了A的位置
-">
-<meta itemprop="datePublished" content="2019-06-21T14:20:34&#43;00:00" />
-<meta itemprop="dateModified" content="2019-06-21T14:20:34&#43;00:00" />
+"><meta itemprop="datePublished" content="2019-06-21T14:20:34+00:00" />
+<meta itemprop="dateModified" content="2019-06-21T14:20:34+00:00" />
 <meta itemprop="wordCount" content="562">
-
-
-
 <meta itemprop="keywords" content="算法,数据结构," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="红黑树"/>
 <meta name="twitter:description" content="简介
@@ -127,7 +124,7 @@
 <body>
   <div id="mobile-navbar" class="mobile-navbar">
   <div class="mobile-header-logo">
-    <a href="/qianz.github.io/" class="logo">qianz</a>
+    <a href="/" class="logo">qianz</a>
   </div>
   <div class="mobile-navbar-icon">
     <span></span>
@@ -147,12 +144,21 @@
         <li class="mobile-menu-item">Categories</li>
       </a>
   </ul>
+
+  
+
+
 </nav>
+
   <div class="container" id="mobile-panel">
     <header id="header" class="header">
         <div class="logo-wrapper">
-  <a href="/qianz.github.io/" class="logo">qianz</a>
+  <a href="/" class="logo">qianz</a>
 </div>
+
+
+
+
 
 <nav class="site-navbar">
   <ul id="menu" class="menu">
@@ -167,6 +173,7 @@
       </li>
   </ul>
 </nav>
+
     </header>
 
     <main id="main" class="main">
@@ -207,7 +214,7 @@
     </li>
     <li><a href="#一些小证明">一些小证明</a>
       <ul>
-        <li><a href="#a-nameno_double_length_row为什么没有一条路径会比另外一条路径长出两倍a">为什么没有一条路径会比另外一条路径长出两倍?</a></li>
+        <li><a href="#a-nameno_double_length_row为什么没有一条路径会比另外一条路径长出两倍a"><!-- raw HTML omitted -->为什么没有一条路径会比另外一条路径长出两倍?<!-- raw HTML omitted --></a></li>
       </ul>
     </li>
   </ul>
@@ -324,13 +331,11 @@
 
   <span class="copyright-year">
     &copy; 
-    2020
-    <span class="heart">
-      <i class="iconfont icon-heart"></i>
-    </span>
-    <span class="author">千舟</span>
+    2020 - 
+    2023<span class="heart"><i class="iconfont icon-heart"></i></span><span>千舟</span>
   </span>
 </div>
+
     </footer>
 
     <div class="back-to-top" id="back-to-top">
@@ -341,16 +346,19 @@
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="/qianz.github.io/dist/even.26188efa.min.js"></script>
+
+
+
+<script type="text/javascript" src="/qianz.github.io/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js"></script>
   <script type="text/javascript">
     window.MathJax = {
-      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
-      TeX: {equationNumbers: {autoNumber: "AMS"}},
-      showProcessingMessages: false,
-      messageStyle: 'none'
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        tags: 'ams',
+        }
     };
   </script>
-  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
 
 
 

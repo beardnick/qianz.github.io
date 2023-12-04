@@ -5,11 +5,7 @@
     <link>https://beardnick.github.io/qianz.github.io/tags/spring/</link>
     <description>Recent content in spring on 千舟</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 29 Feb 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://beardnick.github.io/qianz.github.io/tags/spring/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 29 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://beardnick.github.io/qianz.github.io/tags/spring/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>SpringBoot单元测试</title>
       <link>https://beardnick.github.io/qianz.github.io/post/Java/springboottest/</link>
