@@ -9,7 +9,7 @@ A super concise theme for Hugo
 
 > It's a port of the [hexo-theme-even](https://github.com/ahonn/hexo-theme-even)
 
-[Demo](https://blog.olowolo.com/example-site/) | [中文说明](https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md)
+[Demo](https://hugo-theme-even.netlify.app) | [中文说明](https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md)
 
 ## Screenshots
 
@@ -22,6 +22,8 @@ $ git clone https://github.com/olOwOlo/hugo-theme-even themes/even
 ```
 
 **Important:** Take a look inside the [`exampleSite`](https://github.com/olOwOlo/hugo-theme-even/tree/master/exampleSite) folder of this theme. You'll find a file called [`config.toml`](https://github.com/olOwOlo/hugo-theme-even/blob/master/exampleSite/config.toml). **To use it, copy the [`config.toml`](https://github.com/olOwOlo/hugo-theme-even/blob/master/exampleSite/config.toml) in the root folder of your Hugo site.** Feel free to change it.
+
+**Important:** This theme uses [Hugo Pipes](https://gohugo.io/hugo-pipes/introduction/). Modifying contents in `assets` requires the extended version to be installed.
 
 **NOTE:** For this theme, you should use **post** instead of **posts**, namely `hugo new post/some-content.md`.
 
@@ -38,6 +40,16 @@ defaultContentLanguage = "en"  # en / zh-cn / other...
 Can also support any other languages as well. For example, to support german, create a file `/i18n/de.yaml` in the root folder of your Hugo site. For reference template you can see the [`en.yaml`](https://github.com/olOwOlo/hugo-theme-even/tree/master/i18n/en.yaml) file.
 
 P.S. In multilingual mode, the language which currently being used to render the website will be used.
+
+### Language selector
+
+It is possible to enable language selector for multilingual site. It will be displayed in the header or in the slide menu.
+
+To enable it, set `showLanguageSelector` parameter to `true`.
+
+```toml
+showLanguageSelector = true
+```
 
 ## Favicon
 
@@ -64,22 +76,9 @@ You can customize something for a single content in the content's front-matter. 
 
 This theme provides `center`,` right`, `left`,` music`, `admonition` shortcodes, and support `center`,` right`, `left` class for the built-in `figure`. See more information from [there](https://blog.olowolo.com/example-site/post/shortcodes/).
 
-## Theme Color 
+## Theme Color
 
-There are five built-in theme colors ( Default | Mint Green | Cobalt Blue | Hot Pink | Dark Violet ), you can config it by changing the `$theme-color-config` value in [`/src/css/_variable.scss`](https://github.com/olOwOlo/hugo-theme-even/blob/master/src/css/_variables.scss#L5-L8).
-    
-## Build
-
-If you changed any file under `/src/`, you need to rebuild. 
-```bash
-cd ./themes/even/
-# install dependencies
-yarn install
-# build
-yarn build
-```
-
-_You need to install **[Yarn](https://yarnpkg.com/)** and **[Node.js](https://nodejs.org/)** first._
+There are five built-in theme colors ( Default | Mint Green | Cobalt Blue | Hot Pink | Dark Violet ), you can config it by changing the `$theme-color-config` value in [`/assets/sass/_variable.scss`](https://github.com/olOwOlo/hugo-theme-even/blob/master/assets/sass/_variables.scss#L5-L8).
 
 ## Update Theme
 
@@ -87,6 +86,8 @@ _You need to install **[Yarn](https://yarnpkg.com/)** and **[Node.js](https://no
 cd ./themes/even/
 git pull
 ```
+
+**Whenever you update this theme, you should check the `CHANGELOG.md` file, there may be some breaking changes.**
 
 ## License
 
