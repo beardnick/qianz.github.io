@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.111.3 with theme even" />
+<meta name="generator" content="Hugo 0.127.0 with theme even" />
 
 
 <link rel="canonical" href="https://beardnick.github.io/qianz.github.io/post/why_network/" />
@@ -39,19 +39,26 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="为什么计算机网络要这么设计" />
-<meta property="og:description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://beardnick.github.io/qianz.github.io/post/why_network/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2024-04-13T11:04:55+08:00" />
-<meta property="article:modified_time" content="2024-04-13T11:04:55+08:00" />
-<meta itemprop="name" content="为什么计算机网络要这么设计">
-<meta itemprop="description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么"><meta itemprop="datePublished" content="2024-04-13T11:04:55+08:00" />
-<meta itemprop="dateModified" content="2024-04-13T11:04:55+08:00" />
-<meta itemprop="wordCount" content="533">
-<meta itemprop="keywords" content="network," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="为什么计算机网络要这么设计"/>
-<meta name="twitter:description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么"/>
+<meta property="og:url" content="https://beardnick.github.io/qianz.github.io/post/why_network/">
+  <meta property="og:site_name" content="千舟">
+  <meta property="og:title" content="为什么计算机网络要这么设计">
+  <meta property="og:description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2024-04-13T11:04:55+08:00">
+    <meta property="article:modified_time" content="2024-04-13T11:04:55+08:00">
+    <meta property="article:tag" content="Network">
+
+  <meta itemprop="name" content="为什么计算机网络要这么设计">
+  <meta itemprop="description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么">
+  <meta itemprop="datePublished" content="2024-04-13T11:04:55+08:00">
+  <meta itemprop="dateModified" content="2024-04-13T11:04:55+08:00">
+  <meta itemprop="wordCount" content="533">
+  <meta itemprop="keywords" content="Network">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="为什么计算机网络要这么设计">
+  <meta name="twitter:description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么">
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -249,7 +256,7 @@
       <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
       <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
       <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
-  <a href="https://beardnick.github.io/qianz.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  
 </div>
 
 <div class="copyright">
@@ -298,6 +305,26 @@
     };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+  
+    
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-R8VEWR2RP4"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-R8VEWR2RP4');
+        }
+      </script>
+    
+  
 
 
 
