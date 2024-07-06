@@ -15,12 +15,5 @@
       <guid>https://beardnick.github.io/qianz.github.io/post/route/</guid>
       <description>ip rule and ip route the packet is first matched against ip rules and then directed to specific ip table to match ip route rules&#xA;1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default these three rules are created by the kernel the number is the matching priority from all means all packets</description>
     </item>
-    <item>
-      <title>为什么计算机网络要这么设计</title>
-      <link>https://beardnick.github.io/qianz.github.io/post/why_network/</link>
-      <pubDate>Sat, 13 Apr 2024 11:04:55 +0800</pubDate>
-      <guid>https://beardnick.github.io/qianz.github.io/post/why_network/</guid>
-      <description>为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么</description>
-    </item>
   </channel>
 </rss>
