@@ -2,39 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>千舟</title>
-    <link>http://localhost:1313/qianz.github.io/</link>
+    <link>https://beardnick.github.io/qianz.github.io/</link>
     <description>Recent content on 千舟</description>
     <generator>Hugo</generator>
     <language>en</language>
     <lastBuildDate>Sun, 07 Jul 2024 06:06:52 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/qianz.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://beardnick.github.io/qianz.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>linux route</title>
-      <link>http://localhost:1313/qianz.github.io/post/route/</link>
+      <link>https://beardnick.github.io/qianz.github.io/post/route/</link>
       <pubDate>Sun, 07 Jul 2024 06:06:52 +0800</pubDate>
-      <guid>http://localhost:1313/qianz.github.io/post/route/</guid>
+      <guid>https://beardnick.github.io/qianz.github.io/post/route/</guid>
       <description>ip rule and ip route the packet is first matched against ip rules and then directed to specific ip table to match ip route rules&#xA;1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default these three rules are created by the kernel the number is the matching priority from all means all packets</description>
     </item>
     <item>
-      <title>understand docker network</title>
-      <link>http://localhost:1313/qianz.github.io/post/docker_network/</link>
-      <pubDate>Thu, 04 Jul 2024 22:26:15 +0800</pubDate>
-      <guid>http://localhost:1313/qianz.github.io/post/docker_network/</guid>
-      <description>the default bridge network tldr&#xA;create a docker container create a docker compose file to start a redis docker container&#xA;1 2 3 4 5 6 7 8 version: &amp;#34;3&amp;#34; services: redis-lab: image: redis:5.0 container_name: redis-lab ports: - &amp;#34;16379:6379&amp;#34; restart: always launch this container with command&#xA;1 docker compose -f redis-lab-compose.yaml up your container has been assigned with a ip you can get your container ip with&#xA;1 docker inspect -f &amp;#39;{{range.</description>
-    </item>
-    <item>
       <title>为什么计算机网络要这么设计</title>
-      <link>http://localhost:1313/qianz.github.io/post/why_network/</link>
+      <link>https://beardnick.github.io/qianz.github.io/post/why_network/</link>
       <pubDate>Sat, 13 Apr 2024 11:04:55 +0800</pubDate>
-      <guid>http://localhost:1313/qianz.github.io/post/why_network/</guid>
+      <guid>https://beardnick.github.io/qianz.github.io/post/why_network/</guid>
       <description>为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么</description>
-    </item>
-    <item>
-      <title>为什么vim</title>
-      <link>http://localhost:1313/qianz.github.io/post/why_vim/</link>
-      <pubDate>Tue, 05 Dec 2023 12:57:08 +0800</pubDate>
-      <guid>http://localhost:1313/qianz.github.io/post/why_vim/</guid>
-      <description>杀手级功能：vim模式 用代码的方式描述编辑操作 只要一个领域的工作可以用代码来描述那么就会带了生产力的巨大飞跃。 html,css把图形用代码描</description>
     </item>
   </channel>
 </rss>
