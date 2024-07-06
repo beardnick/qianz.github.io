@@ -15,8 +15,8 @@ ip rule
 # 32767:  from all lookup default
 ```
 
-these three rules are created by the kernel
-**the number is the matching priority**
+these three rules are created by the kernel \
+**the number is the matching priority** \
 **`from all` means all packets**
 
 ```sh
