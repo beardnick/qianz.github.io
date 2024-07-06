@@ -1,43 +1,71 @@
-<?xml-stylesheet type="text/xsl" href="https://beardnick.github.io/qianz.github.io/sitemap.xsl"?>
+<?xml-stylesheet type="text/xsl" href="http://localhost:1313/qianz.github.io/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/tags/network/</loc>
+    <loc>http://localhost:1313/qianz.github.io/post/route/</loc>
+    <lastmod>2024-07-07T06:06:52+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/qianz.github.io/post/</loc>
+    <lastmod>2024-07-07T06:06:52+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/qianz.github.io/</loc>
+    <lastmod>2024-07-07T06:06:52+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/qianz.github.io/tags/docker/</loc>
+    <lastmod>2024-07-04T22:26:15+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/qianz.github.io/tags/</loc>
+    <lastmod>2024-07-04T22:26:15+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/qianz.github.io/post/docker_network/</loc>
+    <lastmod>2024-07-04T22:26:15+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/qianz.github.io/tags/network/</loc>
     <lastmod>2024-04-13T11:04:55+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/post/</loc>
+    <loc>http://localhost:1313/qianz.github.io/post/why_network/</loc>
     <lastmod>2024-04-13T11:04:55+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/tags/</loc>
-    <lastmod>2024-04-13T11:04:55+08:00</lastmod>
+    <loc>http://localhost:1313/qianz.github.io/post/why_vim/</loc>
+    <lastmod>2023-12-05T12:57:08+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://beardnick.github.io/qianz.github.io/post/why_network/</loc>
-    <lastmod>2024-04-13T11:04:55+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://beardnick.github.io/qianz.github.io/</loc>
-    <lastmod>2024-04-13T11:04:55+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://beardnick.github.io/qianz.github.io/categories/</loc>
+    <loc>http://localhost:1313/qianz.github.io/categories/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

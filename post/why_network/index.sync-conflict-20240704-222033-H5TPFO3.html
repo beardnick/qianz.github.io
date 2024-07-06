@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/qianz.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=qianz.github.io/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>为什么计算机网络要这么设计 - qianz</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="千舟" /><meta name="description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.127.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/qianz.github.io/post/why_network/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/qianz.github.io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/qianz.github.io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/qianz.github.io/favicon-16x16.png">
+<link rel="manifest" href="/qianz.github.io/manifest.json">
+<link rel="mask-icon" href="/qianz.github.io/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<link href="/qianz.github.io/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:url" content="http://localhost:1313/qianz.github.io/post/why_network/">
+  <meta property="og:site_name" content="qianz">
+  <meta property="og:title" content="为什么计算机网络要这么设计">
+  <meta property="og:description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2024-04-13T11:04:55+08:00">
+    <meta property="article:modified_time" content="2024-04-13T11:04:55+08:00">
+    <meta property="article:tag" content="Network">
+
+  <meta itemprop="name" content="为什么计算机网络要这么设计">
+  <meta itemprop="description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么">
+  <meta itemprop="datePublished" content="2024-04-13T11:04:55+08:00">
+  <meta itemprop="dateModified" content="2024-04-13T11:04:55+08:00">
+  <meta itemprop="wordCount" content="533">
+  <meta itemprop="keywords" content="Network">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="为什么计算机网络要这么设计">
+  <meta name="twitter:description" content="为什么需要有ip地址 大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢? 更大点说为什么">
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">qianz</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/qianz.github.io/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/qianz.github.io/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/qianz.github.io/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/qianz.github.io/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">qianz</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/qianz.github.io/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/qianz.github.io/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/qianz.github.io/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/qianz.github.io/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">为什么计算机网络要这么设计</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2024-04-13 </span>
+        
+          <span class="more-meta"> 533 words </span>
+          <span class="more-meta"> 2 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/qianz.github.io/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#为什么需要有ip地址">为什么需要有ip地址</a>
+      <ul>
+        <li><a href="#mac地址加单个大交换机的网络">mac地址加单个大交换机的网络</a></li>
+        <li><a href="#mac地址加多级交换机的网络">mac地址加多级交换机的网络</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h1 id="为什么需要有ip地址">为什么需要有ip地址</h1>
+<p>大家都请楚ip地址最终需要被转换为mac地址才能最终发给目标机器，那为什么不直接使用mac地址进行通信呢?
+更大点说为什么有了链路层还需要网络层呢？</p>
+<!-- more -->
+<h2 id="mac地址加单个大交换机的网络">mac地址加单个大交换机的网络</h2>
+<p>机器与机器之间需要通过交换机中转通信，为了能够让互联网上任意两台机器都能互相访问，交换机需要记录非常多的mac地址。</p>
+<p><img alt="mac_network.drawio" src="https://raw.githubusercontent.com/beardnick/static/master/images/mac_network.drawio.svg"></p>
+<p>显然把全球的计算机全部连接在一个大交换机上面并不现实，首先是这样做这个<strong>交换机将会特别巨大</strong>，再者<strong>此交换机会变成一个单点</strong>，
+如果这个交换机崩溃，全球互联网都会崩溃。那么优化一下结构，把交换机分成多级就可以解决这个问题了。</p>
+<h2 id="mac地址加多级交换机的网络">mac地址加多级交换机的网络</h2>
+<p><img alt="multilayer_mac_network.drawio" src="https://raw.githubusercontent.com/beardnick/static/master/images/multilayer_mac_network.drawio.svg"></p>
+<p>此时通信的时候每台交换机都需要记录下所有目标mac地址要走的下一跳的交换机。<br>
+如绿色机器要传输数据到红色机器，中间要经过交换机1,2,3. <br>
+如绿色机器要传输数据到紫色机器，中间要经过交换机1,2,4. <br>
+仅仅支持这两条链路就需要记下这些信息</p>
+<table>
+<thead>
+<tr>
+<th>交换机</th>
+<th>记录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>绿：直连 红：2 紫：2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>绿：1 红：3 紫：4</td>
+</tr>
+<tr>
+<td>3</td>
+<td>绿：2 红：直连 紫：2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>绿：3 红：2 紫：直连</td>
+</tr>
+</tbody>
+</table>
+<p>要支持全球的互联网的连接将会需要巨大的空间存储链路信息，在mac地址上这种问题已经无法解决了.
+于是要引入ip地址来解决这个问题，再次印证k计算机里面所有问题都可以通过加一个中间层解决。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">千舟</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2024-04-13
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/qianz.github.io/tags/network/">network</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/qianz.github.io/post/hello/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Hello</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/qianz.github.io/post/why_vim/">
+            <span class="next-text nav-default">为什么vim</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:1685437606@qq.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/beardnick" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="https://www.zhihu.com/people/qian-zhou-64-73" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/qianz.github.io/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/qianz.github.io/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2020 - 
+    2024<span class="heart"><i class="iconfont icon-heart"></i></span><span>千舟</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/qianz.github.io/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        tags: 'ams',
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

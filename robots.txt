@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: https://beardnick.github.io/qianz.github.io/sitemap.xml
+Sitemap: http://localhost:1313/qianz.github.io/sitemap.xml
