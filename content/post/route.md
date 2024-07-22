@@ -1,5 +1,5 @@
 ---
-title: "linux route"
+title: "linux route basic tutorial"
 date: 2024-07-07T06:06:52+08:00
 ---
 
@@ -45,5 +45,5 @@ ip route get ip_address
 
 ```bash
 # ip in 192.168.3.0/24 should be routed through mytun network interface
-ip route add 192.168.3.0/24 dev mytun 
+ip route add 192.168.3.0/24 dev mytun
 ```
