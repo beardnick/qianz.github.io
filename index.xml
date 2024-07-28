@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>千舟</title>
-    <link>https://beardnick.github.io/qianz.github.io/</link>
-    <description>Recent content on 千舟</description>
-    <generator>Hugo</generator>
-    <language>en</language>
-    <lastBuildDate>Sun, 07 Jul 2024 06:06:52 +0800</lastBuildDate>
-    <atom:link href="https://beardnick.github.io/qianz.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>linux route</title>
-      <link>https://beardnick.github.io/qianz.github.io/post/route/</link>
-      <pubDate>Sun, 07 Jul 2024 06:06:52 +0800</pubDate>
-      <guid>https://beardnick.github.io/qianz.github.io/post/route/</guid>
-      <description>ip rule and ip route the packet is first matched against ip rules and then directed to specific ip table to match ip route rules&#xA;1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default these three rules are created by the kernel the number is the matching priority from all means all packets</description>
-    </item>
-  </channel>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title></title>
+        <link>https://beardnick.github.io/qianz.github.io/</link>
+        <description>Hugo theme even example site.</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 22 Jul 2024 13:07:06 &#43;0800</lastBuildDate>
+            <atom:link href="https://beardnick.github.io/qianz.github.io/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>linux route basic tutorial</title>
+    <link>https://beardnick.github.io/qianz.github.io/posts/route/</link>
+    <pubDate>Sun, 07 Jul 2024 06:06:52 &#43;0800</pubDate>
+    <author>qianz</author>
+    <guid>https://beardnick.github.io/qianz.github.io/posts/route/</guid>
+    <description><![CDATA[ip rule and ip route the packet is first matched against ip rules and then directed to specific ip table to match ip route rules
+1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default these three rules are created by the kernel the number is the matching priority from all means all packets]]></description>
+</item>
+</channel>
 </rss>
