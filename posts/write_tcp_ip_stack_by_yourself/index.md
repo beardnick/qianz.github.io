@@ -7,8 +7,7 @@ you may find it hard to remember tcp three-way handshake and four-way handshake.
 Here I'll share my method for understanding tcp handshake.\
 You need remember only two things about TCP.
 
-- 1. Every 
-- data sent in TCP requires an ack to ensure it has been received. Otherwise, this data will be resent.
+- 1. Every data sent in TCP requires an ack to ensure it has been received. Otherwise, this data will be resent.
 - 2. The essence of a TCP connection is the exchange and maintenance of status information,which includes address,port,window size and so on, between the communicating parties
 
 The client sends it's information to the server requires one time of communication
