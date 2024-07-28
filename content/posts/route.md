@@ -1,6 +1,9 @@
 ---
 title: "linux route basic tutorial"
 date: 2024-07-07T06:06:52+08:00
+tags:
+  - route
+  - linux
 ---
 
 # ip rule and ip route

@@ -1,11 +1,10 @@
 #baseURL = "http://example.org/"
 baseURL = "https://beardnick.github.io/qianz.github.io"
 defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
-title = "千舟"
 preserveTaxonomyNames = true
 enableRobotsTXT = true
 enableEmoji = true
-theme = "even"
+theme = "LoveIt"
 enableGitInfo = false # use git commit log to generate lastmod record # 可根据 Git 中的提交生成最近更新记录。
 disablePathToLower = true
 
@@ -22,33 +21,12 @@ googleAnalytics = "G-R8VEWR2RP4"      # UA-XXXXXXXX-X
 copyright = ""            # default: author.name ↓        # 默认为下面配置的author.name ↓
 
 [author]                  # essential                     # 必需
-  name = "千舟"
+  name = "qianz"
 
 [sitemap]                 # essential                     # 必需
   changefreq = "weekly"
   priority = 0.5
   filename = "sitemap.xml"
-
-[[menu.main]]             # config your menu              # 配置目录
-  name = "Home"
-  weight = 10
-  identifier = "home"
-  url = "/"
-[[menu.main]]
-  name = "Archives"
-  weight = 20
-  identifier = "archives"
-  url = "/post/"
-[[menu.main]]
-  name = "Tags"
-  weight = 30
-  identifier = "tags"
-  url = "/tags/"
-[[menu.main]]
-  name = "Categories"
-  weight = 40
-  identifier = "categories"
-  url = "/categories/"
 
 [params]
   version = "4.x"           # Used to give a friendly message when you have an incompatible update
@@ -180,7 +158,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
     alipay = "/path/to/your/alipay-qr-code.png"           # 支付宝二维码
 
   [params.social]                                         # 社交链接
-    a-email = "mailto:1685437606@qq.com"
+    a-email = "mailto:qianzhoubeard@gmail.com"
     b-stack-overflow = "http://localhost:1313"
     c-twitter = "http://localhost:1313"
     d-facebook = "http://localhost:1313"
@@ -226,3 +204,94 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   section = ["HTML", "RSS"]
   taxonomy = ["HTML", "RSS"]
   taxonomyTerm = ["HTML"]
+
+[languages]
+  [languages.en]
+    weight = 1
+    languageCode = "en"
+    languageName = "English"
+    [[languages.en.author]]
+      name = "qianz"
+    [[languages.en.menu.main]]
+      weight = 1
+      identifier = "posts"
+      pre = ""
+      post = ""
+      name = "Posts"
+      url = "/posts/"
+      title = "qianz"
+    [[languages.en.menu.main]]
+      weight = 2
+      identifier = "tags"
+      pre = ""
+      post = ""
+      name = "Tags"
+      url = "/tags/"
+      title = ""
+    [[languages.en.menu.main]]
+      weight = 3
+      identifier = "categories"
+      pre = ""
+      post = ""
+      name = "Categories"
+      url = "/categories/"
+      title = ""
+    [languages.en.params]
+      [languages.en.params.header]
+        [languages.en.params.header.title]
+          name = "qianz"
+    [languages.en.params.home]
+      rss = 10
+      [languages.en.params.home.profile]
+        enable = true
+        avatarURL = ""
+        title = ""
+        subtitle = "a site to hack everything"
+        typeit = true
+        social = true
+        disclaimer = ""
+
+  [languages.zh-cn]
+    weight = 2
+    title = "千舟"
+    languageCode = "zh-CN"
+    languageName = "简体中文"
+    hasCJKLanguage = true
+        [languages.zh-cn.params]
+      [languages.zh-cn.params.header]
+        [languages.zh-cn.params.header.title]
+          name = "千舟"
+    [[languages.zh-cn.menu.main]]
+      weight = 1
+      identifier = "posts"
+      pre = ""
+      post = ""
+      name = "文章"
+      url = "/posts/"
+      title = ""
+    [[languages.zh-cn.menu.main]]
+      weight = 2
+      identifier = "tags"
+      pre = ""
+      post = ""
+      name = "标签"
+      url = "/tags/"
+      title = ""
+    [[languages.zh-cn.menu.main]]
+      weight = 3
+      identifier = "categories"
+      pre = ""
+      post = ""
+      name = "分类"
+      url = "/categories/"
+      title = ""
+    [languages.zh-cn.params.home]
+      rss = 10
+      [languages.zh-cn.params.home.profile]
+        enable = true
+        avatarURL = ""
+        title = ""
+        subtitle = "一个折腾技术的网站"
+        typeit = true
+        social = true
+        disclaimer = ""
