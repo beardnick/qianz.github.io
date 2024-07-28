@@ -178,6 +178,13 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
       id = "G-R8VEWR2RP4"
       anonymizeIP = true
 
+  [params.page]
+    [params.page.toc]
+      # whether to enable the table of the contents
+      enable = true
+      # whether to make the table of the contents in the sidebar automatically collapsed
+      auto = false
+
 # See https://gohugo.io/about/hugo-and-gdpr/
 [privacy]
   [privacy.googleAnalytics]
