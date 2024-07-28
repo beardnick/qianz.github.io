@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>write tcp/ip stack by yourself(1):tcp handshake and tuntap - </title><meta name="Description" content="Hugo theme even example site."><meta property="og:url" content="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/">
+  <meta property="og:site_name" content="My cool site">
+  <meta property="og:title" content="write tcp/ip stack by yourself(1):tcp handshake and tuntap">
+  <meta property="og:description" content="1. simple way to understand tcp handshakes you may find it hard to remember tcp three-way handshake and four-way handshake.
+Here I’ll share my method for understanding tcp handshake.
+You need remember only two things about TCP.
+Every data sent in TCP requires an ack to ensure it has been received. Otherwise, this data will be resent. The essence of a TCP connection is the exchange and maintenance of status information,which includes address,port,window size and so on, between the communicating parties The client sends it’s information to the server requires one time of communication and the server sends it’s information to the client requires one time of communication.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-07-22T13:09:20+08:00">
+    <meta property="article:modified_time" content="2024-07-22T13:09:20+08:00">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Tcp">
+    <meta property="article:tag" content="Network">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="write tcp/ip stack by yourself(1):tcp handshake and tuntap">
+  <meta name="twitter:description" content="1. simple way to understand tcp handshakes you may find it hard to remember tcp three-way handshake and four-way handshake.
+Here I’ll share my method for understanding tcp handshake.
+You need remember only two things about TCP.
+Every data sent in TCP requires an ack to ensure it has been received. Otherwise, this data will be resent. The essence of a TCP connection is the exchange and maintenance of status information,which includes address,port,window size and so on, between the communicating parties The client sends it’s information to the server requires one time of communication and the server sends it’s information to the client requires one time of communication.">
+<meta name="application-name" content="My cool site">
+<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" /><link rel="prev" href="https://beardnick.github.io/qianz.github.io/posts/route/" /><link rel="stylesheet" href="/qianz.github.io/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "write tcp/ip stack by yourself(1):tcp handshake and tuntap",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself\/"
+        },"genre": "posts","keywords": "linux, tcp, network","wordcount":  1486 ,
+        "url": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself\/","datePublished": "2024-07-22T13:09:20+08:00","dateModified": "2024-07-22T13:09:20+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "qianz"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/qianz.github.io/" title="">qianz</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/qianz.github.io/posts/" title="qianz"> Posts </a><a class="menu-item" href="/qianz.github.io/tags/"> Tags </a><a class="menu-item" href="/qianz.github.io/categories/"> Categories </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" selected>English</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/qianz.github.io/" title="">qianz</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/qianz.github.io/posts/" title="qianz">Posts</a><a class="menu-item" href="/qianz.github.io/tags/" title="">Tags</a><a class="menu-item" href="/qianz.github.io/categories/" title="">Categories</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" selected>English</option></select>
+                </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">write tcp/ip stack by yourself(1):tcp handshake and tuntap</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/qianz.github.io/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>qianz</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-22">2024-07-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1486 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;7 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-simple-way-to-understand-tcp-handshakes">1. simple way to understand tcp handshakes</a></li>
+    <li><a href="#2-tcp-handshake-states-and-linux-system-calls">2. tcp handshake states and linux system calls</a>
+      <ul>
+        <li><a href="#21-establish-connection">2.1. establish connection</a></li>
+        <li><a href="#22-close-connection">2.2. close connection</a></li>
+        <li><a href="#23-system-calls">2.3. system calls</a>
+          <ul>
+            <li><a href="#231-what-does-bind-do">2.3.1. what does bind do?</a></li>
+            <li><a href="#232-what-does-accept-do">2.3.2. what does accept do?</a></li>
+            <li><a href="#233-what-does-close-do">2.3.3. what does close do?</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#3-tuntap">3. tuntap</a>
+      <ul>
+        <li><a href="#31-tun">3.1. tun</a></li>
+        <li><a href="#32-analyze-the-data">3.2. analyze the data</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h1 id="1-simple-way-to-understand-tcp-handshakes">1. simple way to understand tcp handshakes</h1>
+<p>you may find it hard to remember tcp three-way handshake and four-way handshake.<br>
+Here I&rsquo;ll share my method for understanding tcp handshake.<br>
+You need remember only two things about TCP.</p>
+<ul>
+<li>
+<ol>
+<li>Every</li>
+</ol>
+</li>
+<li>data sent in TCP requires an ack to ensure it has been received. Otherwise, this data will be resent.</li>
+<li>
+<ol start="2">
+<li>The essence of a TCP connection is the exchange and maintenance of status information,which includes address,port,window size and so on, between the communicating parties</li>
+</ol>
+</li>
+</ul>
+<p>The client sends it&rsquo;s information to the server requires one time of communication
+and the server sends it&rsquo;s information to the client requires one time of communication.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"><div class="mermaid" id="id-1"></div>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>It requires two rounds of communication ,with each round involving an ip packet containing data and an ack packet. Therefore, it requires a total of 4 ip packets. It&rsquo;s two syns and two acks during the establishment of a TCP connection and two fins and two acks during the closing of a TCP connection.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"><div class="mermaid" id="id-2"></div>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"><div class="mermaid" id="id-3"></div>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We can combine a syn and an ack to one packet during the establishment of a TCP connection to optimize the performance. Therefor, we use a three-way handshake during the establishment of a TCP connection, and a four-way handshake during the closing of a TCP connection.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"><div class="mermaid" id="id-4"></div>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"><div class="mermaid" id="id-5"></div>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="2-tcp-handshake-states-and-linux-system-calls">2. tcp handshake states and linux system calls</h1>
+<p>We now add the tcp states to the diagrams</p>
+<h2 id="21-establish-connection">2.1. establish connection</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"><div class="mermaid" id="id-6"></div>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="22-close-connection">2.2. close connection</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"><div class="mermaid" id="id-7"></div>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="23-system-calls">2.3. system calls</h2>
+<p>To understand how TCP works on linux, we can examine it through the linux system calls. <br>
+The following code is simple examples of tcp client and server on linux.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// client.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">client_fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">server_address</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="o">*</span><span class="n">message</span> <span class="o">=</span> <span class="s">&#34;Hello from client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">((</span><span class="n">client_fd</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;socket failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">server_address</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">server_address</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="nf">htons</span><span class="p">(</span><span class="mi">8080</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">inet_pton</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="s">&#34;127.0.0.1&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">server_address</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;inet_pton failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// send a connect request
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// the tcp&#39;s state will change to syn_sent
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">connect</span><span class="p">(</span><span class="n">client_fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_address</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_address</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;connect failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">send</span><span class="p">(</span><span class="n">client_fd</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">message</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Message sent to server</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">valread</span> <span class="o">=</span> <span class="nf">read</span><span class="p">(</span><span class="n">client_fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// close the connection
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// will send fin to server
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// the tcp&#39;s state will change from ESTAB to FIN_WAIT_1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">close</span><span class="p">(</span><span class="n">client_fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// server.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">server_fd</span><span class="p">,</span> <span class="n">new_socket</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">address</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">opt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">addrlen</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">address</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="o">*</span><span class="n">hello</span> <span class="o">=</span> <span class="s">&#34;Hello from server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">((</span><span class="n">server_fd</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;socket failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">setsockopt</span><span class="p">(</span><span class="n">server_fd</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEADDR</span> <span class="o">|</span> <span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">opt</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">opt</span><span class="p">)))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;setsockopt failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">address</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">address</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">INADDR_ANY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">address</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="nf">htons</span><span class="p">(</span><span class="mi">8080</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">bind</span><span class="p">(</span><span class="n">server_fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">address</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">address</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;bind failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// listen on a port
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// the tcp&#39;s state will change LISTEN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">listen</span><span class="p">(</span><span class="n">server_fd</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;listen failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// accept incoming connections
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// this system call just get an established tcp connection from a queue in the kernel
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">((</span><span class="n">new_socket</span> <span class="o">=</span> <span class="nf">accept</span><span class="p">(</span><span class="n">server_fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="kt">socklen_t</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addrlen</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">perror</span><span class="p">(</span><span class="s">&#34;accept failed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">valread</span> <span class="o">=</span> <span class="nf">read</span><span class="p">(</span><span class="n">new_socket</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nf">send</span><span class="p">(</span><span class="n">new_socket</span><span class="p">,</span> <span class="n">hello</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">hello</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Hello message sent</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// close the tcp connection
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// the behavior of this system call will diverse depends on the current state of the tcp connection
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// if current_state == ESTAB {
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//     current_state = SYN_SENT
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// } else if  current_state == CLOSE_WAIT {
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//     current_state = LAST_ACK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// }
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">close</span><span class="p">(</span><span class="n">new_socket</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="231-what-does-bind-do">2.3.1. what does bind do?</h3>
+<p>The bind system call preserves the port for the server socket to listen on. <br>
+Binding an address without listening on it won&rsquo;t make the server socket available.</p>
+<h3 id="232-what-does-accept-do">2.3.2. what does accept do?</h3>
+<p>The accept system call just get an established tcp connection from a queue in the kernel. <br>
+The kernel processes the three-way handshake and puts the established connections to a queue called accept queue. <br>
+Since the accept system call has no contact with the listen port, we can bind and listen on the parent process and accept on the child process.</p>
+<h3 id="233-what-does-close-do">2.3.3. what does close do?</h3>
+<p>The close system call on the client side simply sends a fin packet to the server side. <br>
+If the server is in the ESTAB state, the close does the same thing as it does on the client side.</p>
+<p>If the client has sent the fin first and the server changes to the CLOSE_WAIT state, things will get more complicated.</p>
+<p>There is another question as to why we cannot combine fin and ack to get a three-way handshake during the closing of a TCP connection. <br>
+The answer is that we have exposed a close system call to the application layer, so the kernel cannot close the connection directly. <br>
+The kernel needs to wait for the application to instruct it to close the connection, which&rsquo;s why we call this state CLOSE_WAIT.</p>
+<h1 id="3-tuntap">3. tuntap</h1>
+<p>You cannot use network interfaces like eth0 to handle network packets because the linux kernel controls them. Instead, you can use virtual network interface to test your custom tcp stack. Tuntap provides you with the ability to fully control the network packets.</p>
+<p>Tuntap can create two kinds of virtual network interfaces: tun and tap. Tap is a layer 2 network interface that provides mac frames. Tun is a layer 3 network interface that provides ip packets.</p>
+<h2 id="31-tun">3.1. tun</h2>
+<p>Use this code to start a tun interface and see what it receives</p>
+<p><a href="https://github.com/beardnick/lab/blob/master/scripts/tuntap_test.go#L13-L45" target="_blank" rel="noopener noreffer ">test tun</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Test_tun</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">args</span> <span class="o">:=</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">cidr</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">name</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">cidr</span><span class="p">:</span> <span class="s">&#34;11.0.0.1/24&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">name</span><span class="p">:</span> <span class="s">&#34;testtun1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fd</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">CreateTunTap</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">IFF_TUN</span><span class="p">|</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">IFF_NO_PI</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">out</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nf">Command</span><span class="p">(</span><span class="s">&#34;ip&#34;</span><span class="p">,</span> <span class="s">&#34;addr&#34;</span><span class="p">,</span> <span class="s">&#34;add&#34;</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">cidr</span><span class="p">,</span> <span class="s">&#34;dev&#34;</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nf">CombinedOutput</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">out</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">exec</span><span class="p">.</span><span class="nf">Command</span><span class="p">(</span><span class="s">&#34;ip&#34;</span><span class="p">,</span> <span class="s">&#34;link&#34;</span><span class="p">,</span> <span class="s">&#34;set&#34;</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="s">&#34;up&#34;</span><span class="p">).</span><span class="nf">CombinedOutput</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">buf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">syscall</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">buf</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">hex</span><span class="p">.</span><span class="nf">Dump</span><span class="p">(</span><span class="nx">buf</span><span class="p">[:</span><span class="nx">n</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Try to send some requests to this tun interface. You may get something like this.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># send request to the tun</span>
+</span></span><span class="line"><span class="cl">curl -v  http://11.0.0.2/hello
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>get some data</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">00000000  45 00 00 3c 80 40 40 00  40 06 a4 79 0b 00 00 01  |E..&lt;.@@.@..y....|
+</span></span><span class="line"><span class="cl">00000010  0b 00 00 02 bb f8 00 50  08 a8 4a 04 00 00 00 00  |.......P..J.....|
+</span></span><span class="line"><span class="cl">00000020  a0 02 fa f0 67 67 00 00  02 04 05 b4 04 02 08 0a  |....gg..........|
+</span></span><span class="line"><span class="cl">00000030  bf b6 00 fa 00 00 00 00  01 03 03 07              |............|
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="32-analyze-the-data">3.2. analyze the data</h2>
+<table>
+<thead>
+<tr>
+<th>offset of ip</th>
+<th>offset of tcp</th>
+<th>byte</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4/8</td>
+<td></td>
+<td>0x4</td>
+<td>ip version ip v4</td>
+</tr>
+<tr>
+<td>1</td>
+<td></td>
+<td>0x5</td>
+<td>ip header length is 20 byte:  5 * 4 = 20</td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>0x00</td>
+<td>type of service</td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td>0x003c</td>
+<td>total length 60 byte</td>
+</tr>
+<tr>
+<td>6</td>
+<td></td>
+<td>0x8040</td>
+<td>id of the ip</td>
+</tr>
+<tr>
+<td>6 + 3/8</td>
+<td></td>
+<td>010</td>
+<td>flags 0:Reserved; must be zero, 1:Don&rsquo;t Fragment (DF) 0:More Fragments (MF)</td>
+</tr>
+<tr>
+<td>8</td>
+<td></td>
+<td>0 0000 0000 0000</td>
+<td>fragment offset: here is 0</td>
+</tr>
+<tr>
+<td>9</td>
+<td></td>
+<td>0x40</td>
+<td>time to live: 64 seconds</td>
+</tr>
+<tr>
+<td>10</td>
+<td></td>
+<td>0x06</td>
+<td>protocol: 0x06 means tcp</td>
+</tr>
+<tr>
+<td>12</td>
+<td></td>
+<td>0xa479</td>
+<td>header checksum</td>
+</tr>
+<tr>
+<td>16</td>
+<td></td>
+<td>0x0b 00 00 01</td>
+<td>source ip:11.0.0.1</td>
+</tr>
+<tr>
+<td>20</td>
+<td></td>
+<td>0x0b 00 00 02</td>
+<td>dst ip:11.0.0.2</td>
+</tr>
+<tr>
+<td>22</td>
+<td>2</td>
+<td>0xbbf8</td>
+<td>source port: 48120</td>
+</tr>
+<tr>
+<td>24</td>
+<td>4</td>
+<td>0x0050</td>
+<td>dst port: 80</td>
+</tr>
+<tr>
+<td>28</td>
+<td>8</td>
+<td>0x08a84a04</td>
+<td>sequence number:145246724</td>
+</tr>
+<tr>
+<td>32</td>
+<td>12</td>
+<td>0x00000000</td>
+<td>acknowledgement number:0</td>
+</tr>
+<tr>
+<td>33 + 4/8</td>
+<td>13  + 4/8</td>
+<td>0xa</td>
+<td>header length: 10 * 4 = 40</td>
+</tr>
+<tr>
+<td>33 + 10/8</td>
+<td>13  + 10/8</td>
+<td>0000 00</td>
+<td>reserved</td>
+</tr>
+<tr>
+<td>34</td>
+<td>14</td>
+<td>00 0010</td>
+<td>flags URG:0 ACK:0 PSR:0 RST:0 SYN1:1 FIN:0</td>
+</tr>
+<tr>
+<td>36</td>
+<td>16</td>
+<td>0xfaf0</td>
+<td>window size:64240</td>
+</tr>
+<tr>
+<td>38</td>
+<td>18</td>
+<td>0x6767</td>
+<td>checksum</td>
+</tr>
+<tr>
+<td>40</td>
+<td>20</td>
+<td>0x0000</td>
+<td>urgent pointer</td>
+</tr>
+<tr>
+<td>60</td>
+<td>40</td>
+<td></td>
+<td>tcp options and paddings</td>
+</tr>
+</tbody>
+</table>
+<p>This is a syn packet of the TCP handshake. These codes do nothing but print out the syn packet content, so the tcp connection won&rsquo;t be established. This is where we begin to write our own tcp/ip stack.</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2024-07-22</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" data-title="write tcp/ip stack by yourself(1):tcp handshake and tuntap" data-hashtags="linux,tcp,network"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" data-hashtag="linux"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" data-title="write tcp/ip stack by yourself(1):tcp handshake and tuntap"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" data-title="write tcp/ip stack by yourself(1):tcp handshake and tuntap"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/" data-title="write tcp/ip stack by yourself(1):tcp handshake and tuntap"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/qianz.github.io/tags/linux/">Linux</a>,&nbsp;<a href="/qianz.github.io/tags/tcp/">Tcp</a>,&nbsp;<a href="/qianz.github.io/tags/network/">Network</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/qianz.github.io/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/qianz.github.io/posts/route/" class="prev" rel="prev" title="linux route basic tutorial"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>linux route basic tutorial</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.127.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/qianz.github.io/" target="_blank">qianz</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mermaid@9.1.3/dist/mermaid.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"data":{"id-1":"sequenceDiagram\n    participant c \n    participant s\n    c-\u003e\u003es: send c's information to s\n    s-\u003e\u003ec: send s's information to c","id-2":"sequenceDiagram\n    participant c \n    participant s\n    c-\u003e\u003es: syn\n    s-\u003e\u003ec: ack\n    s-\u003e\u003ec: syn\n    c-\u003e\u003es: ack","id-3":"sequenceDiagram\n    participant c \n    participant s\n    c-\u003e\u003es: fin\n    s-\u003e\u003ec: ack\n    s-\u003e\u003ec: fin\n    c-\u003e\u003es: ack","id-4":"sequenceDiagram\n    participant c \n    participant s\n    c-\u003e\u003es: syn\n    s-\u003e\u003ec: syn + ack \n    c-\u003e\u003es: ack","id-5":"sequenceDiagram\n    participant c \n    participant s\n    c-\u003e\u003es: fin\n    s-\u003e\u003ec: ack\n    s-\u003e\u003ec: fin\n    c-\u003e\u003es: ack","id-6":"sequenceDiagram\n    participant c \n    participant s\n    Note right of s: LISTEN\n    c-\u003e\u003es: syn\n    Note left of c: SYN_SENT\n    Note right of s: SYN_RCVD\n    s-\u003e\u003ec: syn + ack \n    Note left of c: ESTAB\n    c-\u003e\u003es: ack\n    Note right of s: ESTAB","id-7":"sequenceDiagram\n    participant c \n    participant s\n    Note over c,s: ESTAB\n    c-\u003e\u003es: fin\n    Note left of c: FIN_WAIT_1\n    Note right of s: CLOSE_WAIT\n    s-\u003e\u003ec: ack\n    Note left of c: FIN_WAIT_2\n    s-\u003e\u003ec: fin\n    Note right of s: LAST_ACK\n    Note left of c: TIME_WAIT\n    c-\u003e\u003es: ack\n    Note right of s: really close here\n    c-\u003e\u003ec: wait 2 msl\n    Note left of c: really close here"}};</script><script type="text/javascript" src="/qianz.github.io/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-R8VEWR2RP4', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-R8VEWR2RP4" async></script></body>
+</html>
