@@ -1,27 +1,16 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title></title>
-        <link>https://beardnick.github.io/qianz.github.io/</link>
+        <link>http://localhost:1313/qianz.github.io/</link>
         <description>Hugo theme even example site.</description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 22 Jul 2024 13:09:20 &#43;0800</lastBuildDate>
-            <atom:link href="https://beardnick.github.io/qianz.github.io/index.xml" rel="self" type="application/rss+xml" />
+        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 07 Jul 2024 06:06:52 &#43;0800</lastBuildDate>
+            <atom:link href="http://localhost:1313/qianz.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
-    <title>write tcp/ip stack by yourself(1):tcp handshake and tuntap</title>
-    <link>https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/</link>
-    <pubDate>Mon, 22 Jul 2024 13:09:20 &#43;0800</pubDate>
-    <author>qianz</author>
-    <guid>https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself/</guid>
-    <description><![CDATA[1. simple way to understand tcp handshakes you may find it hard to remember tcp three-way handshake and four-way handshake.
-Here I&rsquo;ll share my method for understanding tcp handshake.
-You need remember only two things about TCP.
-Every data sent in TCP requires an ack to ensure it has been received. Otherwise, this data will be resent. The essence of a TCP connection is the exchange and maintenance of status information,which includes address,port,window size and so on, between the communicating parties The client sends it&rsquo;s information to the server requires one time of communication and the server sends it&rsquo;s information to the client requires one time of communication.]]></description>
-</item>
-<item>
     <title>linux route basic tutorial</title>
-    <link>https://beardnick.github.io/qianz.github.io/posts/route/</link>
+    <link>http://localhost:1313/qianz.github.io/posts/route/</link>
     <pubDate>Sun, 07 Jul 2024 06:06:52 &#43;0800</pubDate>
     <author>qianz</author>
-    <guid>https://beardnick.github.io/qianz.github.io/posts/route/</guid>
+    <guid>http://localhost:1313/qianz.github.io/posts/route/</guid>
     <description><![CDATA[ip rule and ip route the packet is first matched against ip rules and then directed to specific ip table to match ip route rules
 1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default these three rules are created by the kernel the number is the matching priority from all means all packets]]></description>
 </item>
