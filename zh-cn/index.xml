@@ -1,24 +1,16 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>千舟</title>
-        <link>http://localhost:1313/qianz.github.io/zh-cn/</link>
+        <link>https://beardnick.github.io/qianz.github.io/zh-cn/</link>
         <description>Hugo theme even example site.</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 17 Feb 2025 15:27:18 &#43;0800</lastBuildDate>
-            <atom:link href="http://localhost:1313/qianz.github.io/zh-cn/index.xml" rel="self" type="application/rss+xml" />
+            <atom:link href="https://beardnick.github.io/qianz.github.io/zh-cn/index.xml" rel="self" type="application/rss+xml" />
         <item>
-    <title>自己动手编写TCP/IP协议栈1:tcp包解析</title>
-    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/</link>
-    <pubDate>Mon, 17 Feb 2025 15:27:18 &#43;0800</pubDate>
-    <author>qianz</author>
-    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/</guid>
-    <description><![CDATA[tuntap 由于linux内核控制了网络接口，所以应用层不能直接使用网络接口来处理网络包。linux通过提供tuntap虚拟网络接口的机制，让用户可以]]></description>
-</item>
-<item>
     <title>linux route</title>
-    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/route/</link>
+    <link>https://beardnick.github.io/qianz.github.io/zh-cn/posts/route/</link>
     <pubDate>Sun, 07 Jul 2024 06:06:52 &#43;0800</pubDate>
     <author>qianz</author>
-    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/route/</guid>
+    <guid>https://beardnick.github.io/qianz.github.io/zh-cn/posts/route/</guid>
     <description><![CDATA[ip rule 和 ip route 网络包优先匹配 ip rule 中的规则，然后再被转到相应的 ip table 路由规则处理 1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default 这三条规则是内]]></description>
 </item>
 </channel>
