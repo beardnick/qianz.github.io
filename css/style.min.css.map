@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "style.min.css",
-	"sourceRoot": "/media/qianz/My Passport/data/mycode/qianz.github.io",
+	"sourceRoot": "/media/qianz/My Passport/data/notes/blog_master",
 	"sources": [
 		"themes/LoveIt/assets/css/style.scss",
 		"themes/LoveIt/assets/lib/normalize/normalize.css",
