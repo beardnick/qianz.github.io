@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head><script src="/qianz.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=qianz.github.io/livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>自己动手编写tcp/ip协议栈2:tcp包生成 - 千舟</title><meta name="Description" content="Hugo theme even example site."><meta property="og:title" content="自己动手编写tcp/ip协议栈2:tcp包生成" />
+<meta property="og:description" content="数据结构 上一篇文章较为简单，所以没有详细讲解数据结构的设计，之后的文章难度会逐渐增加，所以这里先介绍一下数据结构的设计。计算机网络是分层结构" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-02-18T09:59:00+08:00" />
+<meta property="article:modified_time" content="2025-02-18T09:59:00+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="自己动手编写tcp/ip协议栈2:tcp包生成"/>
+<meta name="twitter:description" content="数据结构 上一篇文章较为简单，所以没有详细讲解数据结构的设计，之后的文章难度会逐渐增加，所以这里先介绍一下数据结构的设计。计算机网络是分层结构"/>
+<meta name="application-name" content="My cool site">
+<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" /><link rel="prev" href="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" /><link rel="stylesheet" href="/qianz.github.io/css/style.min.css"><link rel="preload" href="/qianz.github.io/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/qianz.github.io/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/qianz.github.io/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/qianz.github.io/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "自己动手编写tcp/ip协议栈2:tcp包生成",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/qianz.github.io\/zh-cn\/posts\/write_tcp_ip_stack_by_yourself_2\/"
+        },"genre": "posts","wordcount":  2344 ,
+        "url": "http:\/\/localhost:1313\/qianz.github.io\/zh-cn\/posts\/write_tcp_ip_stack_by_yourself_2\/","datePublished": "2025-02-18T09:59:00+08:00","dateModified": "2025-02-18T09:59:00+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "qianz"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/qianz.github.io/zh-cn/" title="千舟">千舟</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/zh-cn/qianz.github.io/posts/"> 文章 </a><a class="menu-item" href="/zh-cn/qianz.github.io/tags/"> 标签 </a><a class="menu-item" href="/zh-cn/qianz.github.io/categories/"> 分类 </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/qianz.github.io/zh-cn/" title="千舟">千舟</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/zh-cn/qianz.github.io/posts/" title="">文章</a><a class="menu-item" href="/zh-cn/qianz.github.io/tags/" title="">标签</a><a class="menu-item" href="/zh-cn/qianz.github.io/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">自己动手编写tcp/ip协议栈2:tcp包生成</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/qianz.github.io/zh-cn/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>qianz</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-02-18">2025-02-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2344 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#数据结构">数据结构</a></li>
+    <li><a href="#ip包生成">ip包生成</a>
+      <ul>
+        <li><a href="#校验和">校验和</a></li>
+      </ul>
+    </li>
+    <li><a href="#tcp包生成">tcp包生成</a>
+      <ul>
+        <li><a href="#校验和-1">校验和</a></li>
+      </ul>
+    </li>
+    <li><a href="#校验和计算性能优化">校验和计算性能优化</a></li>
+    <li><a href="#注意事项">注意事项</a></li>
+    <li><a href="#推荐阅读">推荐阅读</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h1 id="数据结构">数据结构</h1>
+<p>上一篇文章较为简单，所以没有详细讲解数据结构的设计，之后的文章难度会逐渐增加，所以这里先介绍一下数据结构的设计。计算机网络是分层结构，除物理层外每一层都有相应的包结构。从链路层到应用层，每一层都会将下一层的包包裹起来，所以我们设计数据结构的时候也设一层包裹一层的形式。基本的构造方法如下：</p>
+<p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/packet_test.go#L85" target="_blank" rel="noopener noreffer ">packet_test.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">pack</span> <span class="o">:=</span> <span class="nf">NewIPPack</span><span class="p">(</span><span class="nf">NewTcpPack</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">RawPack</span><span class="p">{}))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>ip对象包裹tcp对象，tcp对象包裹raw对象，生成的是ip对象。构造函数的入参都是接口，所以如果你愿意，你也可以在tcp中再包裹一层ip对象。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">pack</span> <span class="o">:=</span> <span class="nf">NewIPPack</span><span class="p">(</span><span class="nf">NewTcpPack</span><span class="p">(</span><span class="nf">NewIPPack</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">RawPack</span><span class="p">{})))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这种写法不仅是理论上可行，实际工程中也有意义。一些特殊的网络工具确实是通过在tcp中包裹原始的一些数据包来实现如网络代理之类的功能的。
+网络数据包的接口定义如下:</p>
+<p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/packet.go#L3-L6" target="_blank" rel="noopener noreffer ">packet.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">NetworkPacket</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">NetworkPacket</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">Encode</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>构造函数定义如下:</p>
+<p><a href="https://github.com/beardnick/lab/blob/1213920ed1e5c48f8a6b028c49cae2490bbecd9e/network/netstack/tcpip/tcp.go#L62-L64" target="_blank" rel="noopener noreffer ">tcp.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewTcpPack</span><span class="p">(</span><span class="nx">payload</span> <span class="nx">NetworkPacket</span><span class="p">)</span> <span class="o">*</span><span class="nx">TcpPack</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">TcpPack</span><span class="p">{</span><span class="nx">Payload</span><span class="p">:</span> <span class="nx">payload</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>网络包的接口定义非常简单，<code>Decode</code>函数将数据包解码为对象，<code>Encode</code>函数将对象编码为数据包。</p>
+<h1 id="ip包生成">ip包生成</h1>
+<p>完整实现如下:</p>
+<p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/ip.go#L80-L116" target="_blank" rel="noopener noreffer ">ip encode</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="o">*</span><span class="nx">IPPack</span><span class="p">)</span> <span class="nf">Encode</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">payload</span> <span class="p">[]</span><span class="kt">byte</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span>     <span class="kt">error</span>
+</span></span><span class="line"><span class="cl">	<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Encode</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span> <span class="p">=</span> <span class="nb">uint8</span><span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Version</span><span class="o">&lt;&lt;</span><span class="mi">4</span><span class="p">|</span><span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TypeOfService</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TotalLength</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">i</span><span class="p">.</span><span class="nx">TotalLength</span> <span class="p">=</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="p">)</span> <span class="o">+</span> <span class="nb">uint16</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">payload</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TotalLength</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Identification</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">Flags</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">13</span><span class="p">|</span><span class="nx">i</span><span class="p">.</span><span class="nx">FragmentOffset</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TimeToLive</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">SrcIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">DstIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Options</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span> <span class="p">=</span> <span class="nf">calculateIPChecksum</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">PutUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">],</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">payload</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">data</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>大部分字段的转换都是一些基础的位运算，这里就不详细解释了。需要注意的是校验和的生成。
+校验和的计算稍微有点繁琐，而且也不是tcp,ip协议的重点，如果想要尽快完成一个可以工作的tcp,ip协议实现，可以暂时跳过，直接拷贝现成的实现代码即可。
+不过不能不管校验和，校验不通过的包会直接被丢弃。</p>
+<h2 id="校验和">校验和</h2>
+<p>计算校验和要先生成ip的头的数据包，生成的包中checksum字段为0，然后对数据包进行校验和计算。
+rfc原文如下
+<a href="https://datatracker.ietf.org/doc/html/rfc1071#autoid-1" target="_blank" rel="noopener noreffer ">checksum</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">In outline, the Internet checksum algorithm is very simple:
+</span></span><span class="line"><span class="cl">(1)  Adjacent octets to be checksummed are paired to form 16-bit
+</span></span><span class="line"><span class="cl">    integers, and the 1&#39;s complement sum of these 16-bit integers is
+</span></span><span class="line"><span class="cl">    formed.
+</span></span><span class="line"><span class="cl">(2)  To generate a checksum, the checksum field itself is cleared,
+</span></span><span class="line"><span class="cl">    the 16-bit 1&#39;s complement sum is computed over the octets
+</span></span><span class="line"><span class="cl">    concerned, and the 1&#39;s complement of this sum is placed in the
+</span></span><span class="line"><span class="cl">    checksum field.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>翻译过来就是相邻的8位字节组成16位整数，然后对这些整数求反码(1&rsquo;s complement)和，最后对这个和取反码。
+下面还有另外一段原文补充:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">On a 2&#39;s complement machine, the 1&#39;s complement sum must be
+</span></span><span class="line"><span class="cl">computed by means of an &#34;end around carry&#34;, i.e., any overflows
+</span></span><span class="line"><span class="cl">from the most significant bits are added into the least
+</span></span><span class="line"><span class="cl">significant bits. See the examples below.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>翻译过来就是在补码(2&rsquo;s complement)表示的机器上对于溢出的处理，将溢出的部分加到最低位。
+所以计算反码和的实现如下</p>
+<p><a href="https://github.com/beardnick/lab/blob/1d1b52ebe48c46a76104021167157a6bd894c104/network/netstack/tcpip/packet.go#L27-L37" target="_blank" rel="noopener noreffer ">packet.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">OnesComplementSum</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">sum</span> <span class="kt">uint16</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">2</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">sum</span> <span class="o">+=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span> <span class="p">:</span> <span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// if sum is less than the current byte, it means there is a carry
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="nx">sum</span> <span class="p">&lt;</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">:</span><span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">sum</span><span class="o">++</span> <span class="c1">// handle carry
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">sum</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>聪明的读者可能已经发现了，这个函数要求入参是偶数长度的字节数组。rfc中对奇数的情况这样说明</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">A, B, C, D, ... , Y, Z.  Using the notation [a,b] for the 16-bit
+</span></span><span class="line"><span class="cl">integer a*256+b, where a and b are bytes, then the 16-bit 1&#39;s
+</span></span><span class="line"><span class="cl">complement sum of these bytes is given by one of the following:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    [A,B] +&#39; [C,D] +&#39; ... +&#39; [Y,Z]              [1]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    [A,B] +&#39; [C,D] +&#39; ... +&#39; [Z,0]              [2]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">where +&#39; indicates 1&#39;s complement addition. These cases
+</span></span><span class="line"><span class="cl">correspond to an even or odd count of bytes, respectively.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也就是如果字节数是奇数，那么在末尾填充一个0字节。
+综上，ip包的校验和计算如下:</p>
+<p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/ip.go#L118-L124" target="_blank" rel="noopener noreffer ">ip checksum</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// https://datatracker.ietf.org/doc/html/rfc1071#autoid-1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">calculateIPChecksum</span><span class="p">(</span><span class="nx">headerData</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">headerData</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">headerData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">headerData</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="p">^</span><span class="nf">OnesComplementSum</span><span class="p">(</span><span class="nx">headerData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="tcp包生成">tcp包生成</h1>
+<p><a href="https://github.com/beardnick/lab/blob/c030899077b98d44d8f750d8371befa457a87de0/network/netstack/tcpip/tcp.go#L111-L141" target="_blank" rel="noopener noreffer ">tcp encode</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="nf">Encode</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">SrcPort</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">DstPort</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">SequenceNumber</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">AckNumber</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">DataOffset</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">t</span><span class="p">.</span><span class="nx">DataOffset</span> <span class="p">=</span> <span class="nb">uint8</span><span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="p">((</span><span class="nx">t</span><span class="p">.</span><span class="nx">DataOffset</span><span class="o">&gt;&gt;</span><span class="mi">2</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">4</span><span class="p">)|</span><span class="nx">t</span><span class="p">.</span><span class="nx">Reserved</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Flags</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">WindowSize</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">UrgentPointer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Options</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Encode</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">payload</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">PseudoHeader</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;pseudo header is required to calculate tcp checksum&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span> <span class="p">=</span> <span class="nf">calculateTcpChecksum</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">PseudoHeader</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">PutUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">18</span><span class="p">],</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">data</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>tcp包的生成也只有校验和比较复杂，同样的，如果想要尽快完成一个可以工作的tcp,ip协议实现，可以暂时跳过，直接拷贝现成的实现代码即可。</p>
+<h2 id="校验和-1">校验和</h2>
+<p>tcp包的校验和计算在需要对tcp包头加上一些额外数据，然后再使用函数计算这个数据包的校验和。rfc原文如下</p>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc9293" target="_blank" rel="noopener noreffer ">pseudo-header</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">The checksum also covers a pseudo-header (Figure 2) conceptually prefixed to the TCP header.
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">|           Source Address          |
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">|         Destination Address       |
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">|  zero  |  PTCL  |    TCP Length   |
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">Figure 2: IPv4 Pseudo-header
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Pseudo-header components for IPv4:
+</span></span><span class="line"><span class="cl">    Source Address: the IPv4 source address in network byte order
+</span></span><span class="line"><span class="cl">    Destination Address: the IPv4 destination address in network byte order
+</span></span><span class="line"><span class="cl">    zero: bits set to zero
+</span></span><span class="line"><span class="cl">    PTCL: the protocol number from the IP header
+</span></span><span class="line"><span class="cl">    TCP Length: the TCP header length plus the data length in octets (this is not an explicitly transmitted quantity but is computed), and it does not count the 12 octets of the pseudo-header.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>所以我们先要生成伪头，然后计算校验和，伪头的数据都可以简单地从ip包中获取到。生成新数据包后再使用计算ip校验和相同的函数计算校验和即可，最终实现如下:</p>
+<p><a href="https://github.com/beardnick/lab/blob/c030899077b98d44d8f750d8371befa457a87de0/network/netstack/tcpip/tcp.go#L143-L165" target="_blank" rel="noopener noreffer ">tcp checksum</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="nf">SetPseudoHeader</span><span class="p">(</span><span class="nx">srcIP</span><span class="p">,</span> <span class="nx">dstIP</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">t</span><span class="p">.</span><span class="nx">PseudoHeader</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">PseudoHeader</span><span class="p">{</span><span class="nx">SrcIP</span><span class="p">:</span> <span class="nx">srcIP</span><span class="p">,</span> <span class="nx">DstIP</span><span class="p">:</span> <span class="nx">dstIP</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// https://datatracker.ietf.org/doc/html/rfc1071#autoid-1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">calculateTcpChecksum</span><span class="p">(</span><span class="nx">pseudo</span> <span class="o">*</span><span class="nx">PseudoHeader</span><span class="p">,</span> <span class="nx">headerPayloadData</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">length</span> <span class="o">:=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">headerPayloadData</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pseudoHeader</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nx">pseudo</span><span class="p">.</span><span class="nx">SrcIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nx">pseudo</span><span class="p">.</span><span class="nx">DstIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">ProtocolTCP</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nx">length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">sumData</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sumData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">sumData</span><span class="p">,</span> <span class="nx">pseudoHeader</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sumData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">sumData</span><span class="p">,</span> <span class="nx">headerPayloadData</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">sumData</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">sumData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">sumData</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="p">^</span><span class="nf">OnesComplementSum</span><span class="p">(</span><span class="nx">sumData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="校验和计算性能优化">校验和计算性能优化</h1>
+<p>校验和计算有非常多的优化方法，这里介绍一种使用uint32计算的优化方法。
+直接使用uint32计算，所有溢出的部分都加到了高16位，然后我们把高16位加回到低16位即可，如果再次溢出则继续加回到低16位，直到不再溢出为止。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">OnesComplementSum</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">sum</span> <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">2</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">sum</span> <span class="o">+=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span> <span class="p">:</span> <span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Add the carry bits back in
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">sum</span> <span class="p">&gt;</span> <span class="mh">0xffff</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">sum</span> <span class="p">=</span> <span class="p">(</span><span class="nx">sum</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nx">sum</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">sum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="注意事项">注意事项</h1>
+<ul>
+<li>我的协议栈项目主要以教学为目的，所以我优先保证代码的可读性，其次是性能，所以很多实现都不是最优的。实际生产级别的代码会做大量的性能优化、错误处理、边界检查，一定程度上牺牲可读性换来更高的性能和安全性。</li>
+<li>现有的实现中ip id始终为0，这是为了简化实现，ip id主要在ip分片的时候使用，所以这里可以先忽略，现在的实现在小包的情况下可以正常工作。</li>
+<li>ip, tcp都有options字段，涉及到一些扩展的网络功能，也可以先忽略不实现。</li>
+</ul>
+<h1 id="推荐阅读">推荐阅读</h1>
+<ul>
+<li><a href="https://github.com/google/gopacket" target="_blank" rel="noopener noreffer ">通用网络包处理库</a></li>
+<li><a href="https://github.com/google/netstack" target="_blank" rel="noopener noreffer ">生产级别的用户态tcp/ip协议栈实现</a></li>
+</ul>
+<h1 id="总结">总结</h1>
+<p>至此，我们已经完成了tcp包的生成，下一篇文章我们将开始实现tcp三次握手。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2025-02-18</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" data-title="自己动手编写tcp/ip协议栈2:tcp包生成"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" data-title="自己动手编写tcp/ip协议栈2:tcp包生成"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" data-title="自己动手编写tcp/ip协议栈2:tcp包生成"><i data-svg-src="/qianz.github.io/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" data-title="自己动手编写tcp/ip协议栈2:tcp包生成"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/qianz.github.io/zh-cn/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" class="prev" rel="prev" title="自己动手编写tcp/ip协议栈1:tcp包解析"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>自己动手编写tcp/ip协议栈1:tcp包解析</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.123.7">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/qianz.github.io/zh-cn/" target="_blank">qianz</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/qianz.github.io/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/qianz.github.io/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/qianz.github.io/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/qianz.github.io/js/theme.min.js"></script></body>
+</html>
