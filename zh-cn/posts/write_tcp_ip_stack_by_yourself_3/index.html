@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head><script src="/qianz.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=qianz.github.io/livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>自己动手编写tcp/ip协议栈3:tcp三次握手 - 千舟</title><meta name="Description" content="Hugo theme even example site."><meta property="og:title" content="自己动手编写tcp/ip协议栈3:tcp三次握手" />
+<meta property="og:description" content="数据结构 项目的主要数据结构及其交互方式如下图 虚线的箭头表示是异步调用，这里使用的是Go中的channel机制实现的。如果你想要使用其语言实现" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-02-19T09:56:13+08:00" />
+<meta property="article:modified_time" content="2025-02-19T09:56:13+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="自己动手编写tcp/ip协议栈3:tcp三次握手"/>
+<meta name="twitter:description" content="数据结构 项目的主要数据结构及其交互方式如下图 虚线的箭头表示是异步调用，这里使用的是Go中的channel机制实现的。如果你想要使用其语言实现"/>
+<meta name="application-name" content="My cool site">
+<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" /><link rel="prev" href="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" /><link rel="stylesheet" href="/qianz.github.io/css/style.min.css"><link rel="preload" href="/qianz.github.io/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/qianz.github.io/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/qianz.github.io/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/qianz.github.io/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "自己动手编写tcp/ip协议栈3:tcp三次握手",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/qianz.github.io\/zh-cn\/posts\/write_tcp_ip_stack_by_yourself_3\/"
+        },"genre": "posts","wordcount":  6312 ,
+        "url": "http:\/\/localhost:1313\/qianz.github.io\/zh-cn\/posts\/write_tcp_ip_stack_by_yourself_3\/","datePublished": "2025-02-19T09:56:13+08:00","dateModified": "2025-02-19T09:56:13+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "qianz"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/qianz.github.io/zh-cn/" title="千舟">千舟</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/zh-cn/qianz.github.io/posts/"> 文章 </a><a class="menu-item" href="/zh-cn/qianz.github.io/tags/"> 标签 </a><a class="menu-item" href="/zh-cn/qianz.github.io/categories/"> 分类 </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/qianz.github.io/zh-cn/" title="千舟">千舟</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/zh-cn/qianz.github.io/posts/" title="">文章</a><a class="menu-item" href="/zh-cn/qianz.github.io/tags/" title="">标签</a><a class="menu-item" href="/zh-cn/qianz.github.io/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">自己动手编写tcp/ip协议栈3:tcp三次握手</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/qianz.github.io/zh-cn/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>qianz</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-02-19">2025-02-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 6312 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 13 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#数据结构">数据结构</a></li>
+    <li><a href="#三次握手和四次挥手">三次握手和四次挥手</a></li>
+    <li><a href="#seq号和ack号计算">seq号和ack号计算</a></li>
+    <li><a href="#发送窗口接收窗口和seq号ack号的关系">发送窗口、接收窗口和seq号、ack号的关系</a></li>
+    <li><a href="#socket"><code>socket()</code></a>
+      <ul>
+        <li><a href="#半连接队列">半连接队列</a></li>
+      </ul>
+    </li>
+    <li><a href="#bind"><code>bind()</code></a></li>
+    <li><a href="#listen"><code>listen()</code></a></li>
+    <li><a href="#三次握手">三次握手</a>
+      <ul>
+        <li><a href="#被动开启时处理syn包">被动开启时处理syn包</a></li>
+        <li><a href="#被动开启时处理ack包">被动开启时处理ack包</a></li>
+        <li><a href="#connect"><code>connect()</code></a></li>
+        <li><a href="#主动开启时处理syn-ack包">主动开启时处理syn ack包</a></li>
+      </ul>
+    </li>
+    <li><a href="#accept"><code>accept()</code></a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h1 id="数据结构">数据结构</h1>
+<p>项目的主要数据结构及其交互方式如下图</p>
+<p><img
+        class="lazyload"
+        src="/qianz.github.io/svg/loading.min.svg"
+        data-src="https://raw.githubusercontent.com/beardnick/static/master/images20250219120508.png"
+        data-srcset="https://raw.githubusercontent.com/beardnick/static/master/images20250219120508.png, https://raw.githubusercontent.com/beardnick/static/master/images20250219120508.png 1.5x, https://raw.githubusercontent.com/beardnick/static/master/images20250219120508.png 2x"
+        data-sizes="auto"
+        alt="https://raw.githubusercontent.com/beardnick/static/master/images20250219120508.png"
+        title="netstack_datastructure" /></p>
+<ul>
+<li>虚线的箭头表示是异步调用，这里使用的是Go中的channel机制实现的。如果你想要使用其语言实现需要使用一种并发安全的消息队列替换这里的channel。</li>
+<li><code>NewWork</code>主要负责读取tun中的数据包，向tun写入数据，绑定socket和ip端口信息，根据ip端口信息将相应的网络包发给相应的socket处理。</li>
+<li><code>Socket</code>实现了tcp协议的连接管理，数据发送和接收。</li>
+<li>当你发送一个syn请求到tun时数据包的流向为：<code>tun -&gt; NewWork -&gt; Socket(handle syn) -&gt; Socket(send syn ack) -&gt; Network -&gt; tun</code></li>
+<li>当连接建立后，通过write接口发送数据时包的流向为：<code>Socket(send data) -&gt; Network -&gt; tun</code></li>
+</ul>
+<h1 id="三次握手和四次挥手">三次握手和四次挥手</h1>
+<p>大家可能会觉得三次握手、四次挥手的过程总是背了又忘，握手期间的各种细节也记不清楚。我这里提供一个简单的思路，帮助大家理解三次握手的过程。
+我理解上tcp设计上有两个重点：</p>
+<ul>
+<li>每个发送的数据信息都要求对方有一个ack响应，这里的数据信息包括数据包、syn、fin等。</li>
+<li>tcp的连接是全双工的，所以一个连接的建立需要双方都确认收到了对方的信息。只有一方确认的是中间状态，称为半开连接或半关连接。</li>
+</ul>
+<p>理解了这两点，再看一下三次握手和四次挥手的流程其实是完全相同的，只不过握手过程发送的是syn，挥手过程发送的是fin。就是下面这样：</p>
+<p><img
+        class="lazyload"
+        src="/qianz.github.io/svg/loading.min.svg"
+        data-src="https://raw.githubusercontent.com/beardnick/static/master/images20250219130716.png"
+        data-srcset="https://raw.githubusercontent.com/beardnick/static/master/images20250219130716.png, https://raw.githubusercontent.com/beardnick/static/master/images20250219130716.png 1.5x, https://raw.githubusercontent.com/beardnick/static/master/images20250219130716.png 2x"
+        data-sizes="auto"
+        alt="https://raw.githubusercontent.com/beardnick/static/master/images20250219130716.png"
+        title="handshake" /></p>
+<p>那么问题就来了，那三次握手不就变成四次握手了吗？这是因为设计者为了提高性能将server端发回的syn和ack两个包合并成了一个包，所以就变成了三次握手。
+而连接断开过程中server端可能还有数据要发送，所以不能将syn和ack合并，所以就变成了四次挥手。最终的流程就变成了这样：</p>
+<p><img
+        class="lazyload"
+        src="/qianz.github.io/svg/loading.min.svg"
+        data-src="https://raw.githubusercontent.com/beardnick/static/master/images20250219130840.png"
+        data-srcset="https://raw.githubusercontent.com/beardnick/static/master/images20250219130840.png, https://raw.githubusercontent.com/beardnick/static/master/images20250219130840.png 1.5x, https://raw.githubusercontent.com/beardnick/static/master/images20250219130840.png 2x"
+        data-sizes="auto"
+        alt="https://raw.githubusercontent.com/beardnick/static/master/images20250219130840.png"
+        title="real_handshake" /></p>
+<h1 id="seq号和ack号计算">seq号和ack号计算</h1>
+<p>seq号和ack号也是tcp协议中一个记忆的难点。在我的理解来看，只需要记住一个点：</p>
+<ul>
+<li>所有单个数据信息都要占用一个seq号，同时占用一个ack号 ，数据信息包括数据包、syn、fin等。</li>
+</ul>
+<p>举例来说：</p>
+<ul>
+<li>在三次握手阶段，发送第一个syn之后，syn占用了一个seq号，那么下次client发送包时就要使用seq+1作为seq号。也就是第一个数据包的seq号一定是初始seq号加1。</li>
+<li>在四次挥手阶段，发送第一个fin之后，fin占用了一个seq号，那么下次client发送包时就要使用seq+1作为seq号。而作为server端，在收到fin之后，如果只发送了一个ack，ack不是数据信息，那么server端下次发送的包的seq号就还是当前seq号，不用加一。</li>
+<li>如果是数据包，一个字节数据占用一个seq号，发送了几个字节，在之后seq号就加几。</li>
+</ul>
+<p>而ack号的记忆就根据seq号来，直接把ack号记忆为<strong>下一个对方应该发送的seq号</strong>。那么计算ack号就转换成了计算对端应该发送的seq号。</p>
+<h1 id="发送窗口接收窗口和seq号ack号的关系">发送窗口、接收窗口和seq号、ack号的关系</h1>
+<p>seq号和ack号的理解对于我们理解滑动窗口非常重要。这是rfc中定义的滑动窗口的参数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">SND.UNA	send unacknowledged
+</span></span><span class="line"><span class="cl">SND.NXT	send next
+</span></span><span class="line"><span class="cl">RCV.NXT	receive next
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>翻译过来就是</p>
+<ul>
+<li>SND.UNA：发送了但是未确认的seq号</li>
+<li>SND.NXT：下一个要发送的seq号，这个号之前的数据都已经发送过了</li>
+<li>RCV.NXT：下一个要接收的seq号，这个号之前的数据都已经接收过了</li>
+</ul>
+<p>和我们在上面对seq和ack的分析来看，SND.NXT就是我们这一方下一个要发送的seq号，而RCV.NXT就是ack号。我们画一个图看一下：</p>
+<p><img
+        class="lazyload"
+        src="/qianz.github.io/svg/loading.min.svg"
+        data-src="https://raw.githubusercontent.com/beardnick/static/master/images20250219155820.png"
+        data-srcset="https://raw.githubusercontent.com/beardnick/static/master/images20250219155820.png, https://raw.githubusercontent.com/beardnick/static/master/images20250219155820.png 1.5x, https://raw.githubusercontent.com/beardnick/static/master/images20250219155820.png 2x"
+        data-sizes="auto"
+        alt="https://raw.githubusercontent.com/beardnick/static/master/images20250219155820.png"
+        title="tcp_window" /></p>
+<p>注意到，我把syn,fin也都画入数据的格子中了，虽然syn,fin并非真实的数据，但是因为它们要占用seq号，所以把它们画入数据格子中更方便理解。
+通过看图，我们也可以把对方应该发送的seq号和ack号计算出来。我们发的ack号就是<strong>下一个对方应该发送的seq号</strong>，而对方发送的ack号就是<strong>下一个我们应该发送的seq号</strong>，
+不过对方可能没有收到我们的所有数据，所以对方发送的ack号可能比我们的SND.NXT要小，是一个范围。对方不应该重复ack相同的数据，所以对方发送的ack号范围就是<code>(SND.UNA, SND.NXT]</code>。
+注意是大于<code>SND.UNA</code>，因为ack是下一个应该发送的seq号。</p>
+<h1 id="socket"><code>socket()</code></h1>
+<p><code>socket()</code>接口生成一个socket对象，现在我们只能生成一个tcp的socket，linux内核中的可以生成udp等其它协议的socket。
+socket对象的实现如下：</p>
+<p><a href="https://github.com/beardnick/lab/blob/6365a837db2e19f3027e776692817eab51a01ad6/network/netstack/socket/socket.go#L13-L40" target="_blank" rel="noopener noreffer ">TcpSocket</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">SocketAddr</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">LocalIP</span>    <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">RemoteIP</span>   <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">LocalPort</span>  <span class="kt">uint16</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">RemotePort</span> <span class="kt">uint16</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">TcpSocket</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">SocketAddr</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">State</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpState</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fd</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">network</span>  <span class="o">*</span><span class="nx">Network</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">listener</span> <span class="o">*</span><span class="nx">TcpSocket</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">acceptQueue</span> <span class="kd">chan</span> <span class="o">*</span><span class="nx">TcpSocket</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">synQueue</span>    <span class="nx">sync</span><span class="p">.</span><span class="nx">Map</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">readCh</span>  <span class="kd">chan</span> <span class="p">[]</span><span class="kt">byte</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">writeCh</span> <span class="kd">chan</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">recvNext</span>   <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sendNext</span>   <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sendUnack</span>  <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sendBuffer</span> <span class="p">[]</span><span class="kt">byte</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要注意这些字段</p>
+<ul>
+<li>synQueue：著名的半连接队列，用于存放收到syn包但还没有收到ack包的socket，有意思的是在这里它是一个<code>map</code></li>
+<li>acceptQueue: 著名的全连接队列，用于存放已经建立连接的socket。这里使用的是一个<code>channel</code>，方便异步地将<code>socket</code>传给<code>accept</code>接口</li>
+<li>recvNext: 下一个要接收的seq号</li>
+<li>sendNext: 下一个要发送的seq号</li>
+<li>sendUnack: 发送了但是未确认的seq号</li>
+<li>sendBuffer: 发送缓冲区，用于存放待发送的数据</li>
+</ul>
+<h2 id="半连接队列">半连接队列</h2>
+<p>听这个名字这个应该是一个队列，但是仔细一想就会发现，半连接又不是按先进先出的顺序收到第三次握手的，为什么会是一个队列呢？而且因为要找到是哪个半连接收到了第三次握手，显然应该用一个map来存储。
+我曾经在linux内核源码中尝试找到半连接队列的实现，但是内核代码绕来绕去，也没有一个叫<code>syn queue</code>的东西，令人十分迷惑，最终在stackoverflow上找到了答案
+<a href="https://stackoverflow.com/questions/63232891/confusion-about-syn-queue-and-accept-queue" target="_blank" rel="noopener noreffer ">confusion-about-syn-queue-and-accept-queue</a>。
+长话短说就是内核中没有一个显式的半连接队列的数据结构，承载相关功能的是一个叫<code>ehash</code>的hash表，这个hash表也不是专门为半连接设计的，它还有其它功能。
+全连接队列确实是有一个专门的变量<code>icsk_accept_queue</code>。</p>
+<h1 id="bind"><code>bind()</code></h1>
+<p><code>bind()</code>接口用于将socket绑定到指定的ip和端口上，具体来说是在<code>Network</code>中将<code>SocketAddr</code>和<code>TcpSocket</code>用map关联起来。</p>
+<p><a href="https://github.com/beardnick/lab/blob/bda182aad77b7dc9890e73725b6d6957c436fad7/network/netstack/socket/net.go#L396-L398" target="_blank" rel="noopener noreffer ">bindSocket</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Network</span><span class="p">)</span> <span class="nf">bindSocket</span><span class="p">(</span><span class="nx">addr</span> <span class="nx">SocketAddr</span><span class="p">,</span> <span class="nx">fd</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">n</span><span class="p">.</span><span class="nx">socketFds</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="nx">addr</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><a href="https://github.com/beardnick/lab/blob/bda182aad77b7dc9890e73725b6d6957c436fad7/network/netstack/socket/net.go#L371-L385" target="_blank" rel="noopener noreffer ">getSocket</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Network</span><span class="p">)</span> <span class="nf">getSocket</span><span class="p">(</span><span class="nx">addr</span> <span class="nx">SocketAddr</span><span class="p">)</span> <span class="p">(</span><span class="nx">sock</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">,</span> <span class="nx">ok</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">value</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">socketFds</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="nx">addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">n</span><span class="p">.</span><span class="nf">getSocketByFd</span><span class="p">(</span><span class="nx">value</span><span class="p">.(</span><span class="kt">int</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">newAddr</span> <span class="o">:=</span> <span class="nx">SocketAddr</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">LocalIP</span><span class="p">:</span>   <span class="nx">addr</span><span class="p">.</span><span class="nx">LocalIP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">LocalPort</span><span class="p">:</span> <span class="nx">addr</span><span class="p">.</span><span class="nx">LocalPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">value</span><span class="p">,</span> <span class="nx">ok</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">socketFds</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="nx">newAddr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">n</span><span class="p">.</span><span class="nf">getSocketByFd</span><span class="p">(</span><span class="nx">value</span><span class="p">.(</span><span class="kt">int</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>获取socket的方法比较有讲究，具体逻辑是:</p>
+<ol>
+<li>先以<code>[localIP, localPort, remoteIP, remotePort]</code>为key获取socket，如果可以获取到的话，获取到的就是那种已经建立连接的，或者是那种主动发起连接的socket</li>
+<li>如果获取不到，则以<code>[localIP, localPort]</code>为key获取socket，获取到的就是那种<code>listen</code>的socket</li>
+<li>如果获取不到，则以<code>[localPort]</code>为key获取socket，获取到的就是那种<code>listen</code>了<code>0.0.0.0</code>的socket</li>
+</ol>
+<p>第三条逻辑我没有实现，不过实现起来是完全没有难度的。利用这个技巧，我们的bind就可以bind所有的类型的socket了，非常灵活。</p>
+<h1 id="listen"><code>listen()</code></h1>
+<p><code>listen()</code>接口用于将socket设置为监听状态。实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Network</span><span class="p">)</span> <span class="nf">listen</span><span class="p">(</span><span class="nx">fd</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">backlog</span> <span class="kt">uint</span><span class="p">)</span> <span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.</span><span class="nf">getSocketByFd</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;%w: %d&#34;</span><span class="p">,</span> <span class="nx">ErrNoSocket</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">InitListenSocket</span><span class="p">(</span><span class="nx">sock</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">sock</span><span class="p">.</span><span class="nf">Listen</span><span class="p">(</span><span class="nx">backlog</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">InitListenSocket</span><span class="p">(</span><span class="nx">sock</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">sock</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">.</span><span class="nx">synQueue</span> <span class="p">=</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Map</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">.</span><span class="nx">readCh</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">.</span><span class="nx">writeCh</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">.</span><span class="nx">State</span> <span class="p">=</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateListen</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">Listen</span><span class="p">(</span><span class="nx">backlog</span> <span class="kt">uint</span><span class="p">)</span> <span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">acceptQueue</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nx">backlog</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">.</span><span class="nx">SoMaxConn</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="nx">s</span><span class="p">.</span><span class="nf">runloop</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">runloop</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">data</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">s</span><span class="p">.</span><span class="nx">writeCh</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">tcpPack</span> <span class="o">:=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.(</span><span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">s</span><span class="p">.</span><span class="nf">handle</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">handle</span><span class="p">(</span><span class="nx">ipPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">tcpPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">.</span><span class="nx">Debug</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">			<span class="s">&#34;before handle %s:%d =&gt; %s:%d %s&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ipPack</span><span class="p">.</span><span class="nx">SrcIP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SrcPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ipPack</span><span class="p">.</span><span class="nx">DstIP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">tcpPack</span><span class="p">.</span><span class="nx">DstPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">s</span><span class="p">.</span><span class="nx">State</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">		<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleState</span><span class="p">(</span><span class="nx">ipPack</span><span class="p">,</span> <span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">		<span class="s">&#34;after handle %s:%d =&gt; %s:%d %s&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ipPack</span><span class="p">.</span><span class="nx">SrcIP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SrcPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ipPack</span><span class="p">.</span><span class="nx">DstIP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">tcpPack</span><span class="p">.</span><span class="nx">DstPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">s</span><span class="p">.</span><span class="nx">State</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">resp</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">resp</span><span class="p">.</span><span class="nf">Encode</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">writeCh</span> <span class="o">&lt;-</span> <span class="nx">data</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要逻辑是：</p>
+<ul>
+<li>初始化<code>socket</code>的一些数据，注意<code>acceptQueue</code>的长度是<code>min(backlog, s.network.opt.SoMaxConn)</code></li>
+<li>启动一个<code>goroutine</code>(其它语言实现就用线程，进程之类的并发机制)，监听<code>writeCh</code>，当有数据(是<code>Network</code>从<code>Tun</code>中读取到然后传过来的数据)到来时，调用<code>handle</code>函数处理</li>
+<li><code>handle</code>负责上锁，调用<code>handleState</code>函数生成响应包，然后由<code>handle</code>函数将响应包传给<code>Network</code></li>
+</ul>
+<p>这里<code>handle</code>和<code>handleState</code>函数的设计值得一提。</p>
+<ul>
+<li><code>handleState</code>函数内部的处理十分纯粹，没有涉及到锁，<code>channel</code>等复杂的并发机制，保留这种存粹的逻辑是为了方便做单元测试。如果做得更好的话<code>handleState</code>需要不带副作用，只根据输入的参数返回结果(叫做纯函数)。</li>
+<li>把锁放在最外层也让逻辑更加清晰，不然十分容易造成死锁，数据竞争等并发问题。</li>
+</ul>
+<h1 id="三次握手">三次握手</h1>
+<p>其实想要实现一个可以使用的三次握手和四次挥手的过程就只需要搞清楚seq号和ack号的计算，以及发送窗口和接收窗口的计算。有了上面的基础，实现起来就相对来说比较轻松了。
+协议处理的入口是这样写的：</p>
+<p><a href="https://github.com/beardnick/lab/blob/253c47fe4ca605942c5980f9f11427facf5501ec/network/netstack/socket/socket.go#L196-L243" target="_blank" rel="noopener noreffer ">socket.go#L196-L243</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">handleState</span><span class="p">(</span><span class="nx">ipPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">tcpPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="p">(</span><span class="nx">resp</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">switch</span> <span class="nx">s</span><span class="p">.</span><span class="nx">State</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateListen</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">s</span><span class="p">.</span><span class="nf">handleNewSocket</span><span class="p">(</span><span class="nx">ipPack</span><span class="p">,</span> <span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateSynSent</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleSynResp</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">default</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">!</span><span class="nx">s</span><span class="p">.</span><span class="nf">checkSeqAck</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">				<span class="s">&#34;seq %d or ack %d invalid recvNext %d sendUnack %d sendNext %d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SequenceNumber</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">tcpPack</span><span class="p">.</span><span class="nx">AckNumber</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">s</span><span class="p">.</span><span class="nx">recvNext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">switch</span> <span class="nx">s</span><span class="p">.</span><span class="nx">State</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateClosed</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="o">&amp;</span><span class="nb">uint8</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpSYN</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleSyn</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateSynReceived</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="o">&amp;</span><span class="nb">uint8</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpACK</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleFirstAck</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateEstablished</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="o">&amp;</span><span class="nb">uint8</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpFIN</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleFin</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleData</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateLastAck</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="o">&amp;</span><span class="nb">uint8</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpACK</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">s</span><span class="p">.</span><span class="nf">handleLastAck</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateCloseWait</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateFinWait1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleFinWait1</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateFinWait2</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">handleFinWait2Fin</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">default</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;invalid state %d&#34;</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">State</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>入口还比较直观，就是两个大的<code>switch</code>语句，根据当前连接的不同状态，然后调用不同的处理函数。接下来就一点点分析这些处理函数就行。</p>
+<h2 id="被动开启时处理syn包">被动开启时处理syn包</h2>
+<p>由于syn包发送过来时还没有相应的监听了[localIP, localPort, remoteIP, remotePort]的socket，所以处理syn包的是监听了[localIP, localPort]的socket。
+处理逻辑如下:</p>
+<p><a href="https://github.com/beardnick/lab/blob/6365a837db2e19f3027e776692817eab51a01ad6/network/netstack/socket/socket.go#L210-L229" target="_blank" rel="noopener noreffer ">handleNewSocket</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">handleNewSocket</span><span class="p">(</span><span class="nx">ipPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">tcpPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">value</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">synQueue</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SrcPort</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">sock</span> <span class="o">*</span><span class="nx">TcpSocket</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">sock</span> <span class="p">=</span> <span class="nx">value</span><span class="p">.(</span><span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">sock</span> <span class="p">=</span> <span class="nf">NewSocket</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">InitConnectSocket</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">sock</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">s</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">SocketAddr</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">LocalIP</span><span class="p">:</span>    <span class="nx">ipPack</span><span class="p">.</span><span class="nx">DstIP</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">LocalPort</span><span class="p">:</span>  <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">DstPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">RemoteIP</span><span class="p">:</span>   <span class="nx">ipPack</span><span class="p">.</span><span class="nx">SrcIP</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">RemotePort</span><span class="p">:</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SrcPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">.</span><span class="nf">handle</span><span class="p">(</span><span class="nx">ipPack</span><span class="p">,</span> <span class="nx">tcpPack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如代码所示会先生成一个socket，状态为<code>tcpip.TcpStateClosed</code>，然后调用<code>handle</code>函数处理syn包，handle函数会再次走入<code>handleState</code>函数，然后调用<code>handleSyn</code>函数处理syn包。
+当前当前的socket被保存在新socket的<code>listener</code>字段中，用于后续将自己加入到<code>listener.acceptQueue</code>中。</p>
+<p><code>handleSyn</code>实现如下：</p>
+<p><a href="https://github.com/beardnick/lab/blob/253c47fe4ca605942c5980f9f11427facf5501ec/network/netstack/socket/socket.go#L266-L294" target="_blank" rel="noopener noreffer ">handleSyn</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">handleSyn</span><span class="p">(</span><span class="nx">tcpPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="p">(</span><span class="nx">resp</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">State</span> <span class="p">=</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateSynReceived</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">recvNext</span> <span class="p">=</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SequenceNumber</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">listener</span><span class="p">.</span><span class="nx">synQueue</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SrcPort</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">seq</span> <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">.</span><span class="nx">Seq</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">seq</span> <span class="p">=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nf">Int</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">seq</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">.</span><span class="nx">Seq</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span> <span class="p">=</span> <span class="nx">seq</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span> <span class="p">=</span> <span class="nx">seq</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">ipResp</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">NewPacketBuilder</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetAddr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">SocketAddr</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetSeq</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetAck</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">recvNext</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetFlags</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpSYN</span> <span class="p">|</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpACK</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">ipResp</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要逻辑是:</p>
+<ul>
+<li>将连接状态设置为<code>tcpip.TcpStateSynReceived</code></li>
+<li>将<code>recvNext</code>设置为对端发送的seq号加1，因为对方的syn占用一个对方的seq号</li>
+<li>生成初始seq号，如果配置了初始seq号，则使用配置的seq号，否则使用随机数</li>
+<li>将<code>sendUnack</code>设置为初始seq号，用于等待对方对这个<code>syn</code>进行ack。</li>
+<li>将<code>sendNext</code>设置为初始seq号，用于发送下一个数据包的seq号，发送后<code>sendNext</code>加1，因为syn占用我们一个seq号</li>
+<li>把当前socket加入到<code>synQueue</code>中，<code>synQueue</code>也就是半连接队列。</li>
+</ul>
+<h2 id="被动开启时处理ack包">被动开启时处理ack包</h2>
+<p>实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">handleFirstAck</span><span class="p">(</span><span class="nx">tcpPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="p">(</span><span class="nx">resp</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">State</span> <span class="p">=</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateEstablished</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span> <span class="p">=</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">AckNumber</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">synQueue</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">RemotePort</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">select</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">s</span><span class="p">.</span><span class="nx">listener</span><span class="p">.</span><span class="nx">acceptQueue</span> <span class="o">&lt;-</span> <span class="nx">s</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">	<span class="k">default</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;accept queue is full, drop connection&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nf">addSocket</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nf">bindSocket</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">SocketAddr</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="nx">s</span><span class="p">.</span><span class="nf">runloop</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">checkSeqAck</span><span class="p">(</span><span class="nx">tcpPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="p">(</span><span class="nx">valid</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">State</span> <span class="o">==</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateClosed</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SequenceNumber</span> <span class="o">!=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">recvNext</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="o">&amp;</span><span class="nb">uint8</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpACK</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span> <span class="o">==</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">AckNumber</span> <span class="o">==</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">AckNumber</span> <span class="p">&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span> <span class="o">&amp;&amp;</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">AckNumber</span> <span class="o">&lt;=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要逻辑是：</p>
+<ul>
+<li>校验seq号和ack号是否正确，这个逻辑是一个通用逻辑，放在了<code>checkSeqAck</code>函数中</li>
+<li>将连接状态设置为<code>tcpip.TcpStateEstablished</code></li>
+<li>将<code>sendUnack</code>设置为对端发送的ack号，因为对端发送了ack，代表对端收到了syn</li>
+<li>将当前socket从<code>synQueue</code>中删除</li>
+<li>将当前socket加入到<code>acceptQueue</code>中，因为已经建立了连接，如果<code>acceptQueue</code>满了，则丢弃连接，直接返回</li>
+<li>将当前socket加入到<code>Network</code>中，监听的地址是<code>[localIP, localPort, remoteIP, remotePort]</code>，这个地址优先于监听状态的listener监听的<code>[localIP, localPort]</code>，所以之后的请求会被当前socket处理</li>
+</ul>
+<h2 id="connect"><code>connect()</code></h2>
+<p>也就是主动开启连接，实现如下：</p>
+<p><a href="https://github.com/beardnick/lab/blob/bda182aad77b7dc9890e73725b6d6957c436fad7/network/netstack/socket/net.go#L337-L369" target="_blank" rel="noopener noreffer ">connect</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Network</span><span class="p">)</span> <span class="nf">connect</span><span class="p">(</span><span class="nx">fd</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">serverAddr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">serverIP</span><span class="p">,</span> <span class="nx">serverPort</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">parseAddress</span><span class="p">(</span><span class="nx">serverAddr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">n</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">n</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sock</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.</span><span class="nf">getSocketByFd</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;%w: %d&#34;</span><span class="p">,</span> <span class="nx">ErrNoSocket</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">addr</span> <span class="nx">SocketAddr</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">sock</span><span class="p">.</span><span class="nx">LocalIP</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">sock</span><span class="p">.</span><span class="nx">LocalPort</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nf">getAvailableAddress</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">n</span><span class="p">.</span><span class="nf">unbindSocket</span><span class="p">(</span><span class="nx">SocketAddr</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LocalIP</span><span class="p">:</span>   <span class="nx">sock</span><span class="p">.</span><span class="nx">LocalIP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LocalPort</span><span class="p">:</span> <span class="nx">sock</span><span class="p">.</span><span class="nx">LocalPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">})</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">addr</span> <span class="p">=</span> <span class="nx">SocketAddr</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LocalIP</span><span class="p">:</span>   <span class="nx">sock</span><span class="p">.</span><span class="nx">LocalIP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LocalPort</span><span class="p">:</span> <span class="nx">sock</span><span class="p">.</span><span class="nx">LocalPort</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">addr</span><span class="p">.</span><span class="nx">RemoteIP</span> <span class="p">=</span> <span class="nx">serverIP</span><span class="p">.</span><span class="nf">String</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">addr</span><span class="p">.</span><span class="nx">RemotePort</span> <span class="p">=</span> <span class="nx">serverPort</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">n</span><span class="p">.</span><span class="nf">bindSocket</span><span class="p">(</span><span class="nx">addr</span><span class="p">,</span> <span class="nx">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">InitConnectSocket</span><span class="p">(</span><span class="nx">sock</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">sock</span><span class="p">.</span><span class="nf">Connect</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要逻辑是：</p>
+<ul>
+<li>将socket绑定到<code>[localIP, localPort, remoteIP, remotePort]</code>，如果在bind的时候指定了<code>localIP</code>和<code>localPort</code>，则使用指定的，否则使用<code>Network</code>中随机分配的</li>
+<li>初始化socket，将自己设置为自己的<code>listener</code></li>
+</ul>
+<p>继续看<code>Socket.connect()</code>函数，实现如下：</p>
+<p><a href="https://github.com/beardnick/lab/blob/6365a837db2e19f3027e776692817eab51a01ad6/network/netstack/socket/socket.go#L584-L628" target="_blank" rel="noopener noreffer ">connect</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">connect</span><span class="p">()</span> <span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Listen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ipResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">activeConnect</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ipResp</span><span class="p">.</span><span class="nf">Encode</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">writeCh</span> <span class="o">&lt;-</span> <span class="nx">data</span>
+</span></span><span class="line"><span class="cl">	<span class="o">&lt;-</span><span class="nx">s</span><span class="p">.</span><span class="nx">acceptQueue</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">activeConnect</span><span class="p">()</span> <span class="p">(</span><span class="nx">ipResp</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">State</span> <span class="p">=</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateSynSent</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">seq</span> <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">.</span><span class="nx">Seq</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">seq</span> <span class="p">=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nf">Int</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">seq</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">.</span><span class="nx">Seq</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span> <span class="p">=</span> <span class="nx">seq</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span> <span class="p">=</span> <span class="nx">seq</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">ipResp</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">NewPacketBuilder</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetAddr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">SocketAddr</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetSeq</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetFlags</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpSYN</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">listener</span> <span class="p">=</span> <span class="nx">s</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">ipResp</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要逻辑是:</p>
+<ul>
+<li>将连接状态设置为<code>tcpip.TcpStateSynSent</code></li>
+<li>发送syn包</li>
+<li>阻塞地<code>acceptQueue</code>中获取一个socket，获取到的socket就是当前socket，listener是当前socket自己，当前socket监听了<code>[localIP, localPort, remoteIP, remotePort]</code>，只会有唯一一个socket</li>
+</ul>
+<p>其它逻辑和被动开启时处理syn包的逻辑是相同的，因为它们是对称的。</p>
+<h2 id="主动开启时处理syn-ack包">主动开启时处理syn ack包</h2>
+<p>实现如下：
+<a href="https://github.com/beardnick/lab/blob/6365a837db2e19f3027e776692817eab51a01ad6/network/netstack/socket/socket.go#L261-L301" target="_blank" rel="noopener noreffer ">handleSynResp</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">handleSynResp</span><span class="p">(</span><span class="nx">tcpPack</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="p">(</span><span class="nx">resp</span> <span class="o">*</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">IPPack</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="o">&amp;</span><span class="nb">uint8</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpACK</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="o">&amp;</span><span class="nb">uint8</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpSYN</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// syn + ack expected
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// just drop the packet
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">				<span class="s">&#34;invalid packet, expected syn and ack, but get %s&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">tcpip</span><span class="p">.</span><span class="nf">InspectFlags</span><span class="p">(</span><span class="nx">tcpPack</span><span class="p">.</span><span class="nx">Flags</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">			<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">AckNumber</span> <span class="o">!=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span><span class="o">+</span><span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">				<span class="s">&#34;invalid packet, expected ack %d, but get %d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">tcpPack</span><span class="p">.</span><span class="nx">AckNumber</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">State</span> <span class="p">=</span> <span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpStateEstablished</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">recvNext</span> <span class="p">=</span> <span class="nx">tcpPack</span><span class="p">.</span><span class="nx">SequenceNumber</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">ipResp</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">NewPacketBuilder</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">network</span><span class="p">.</span><span class="nx">opt</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetAddr</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">SocketAddr</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetSeq</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">sendNext</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetAck</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">recvNext</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">SetFlags</span><span class="p">(</span><span class="nx">tcpip</span><span class="p">.</span><span class="nx">TcpACK</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span><span class="p">.</span><span class="nx">sendUnack</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">select</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">s</span><span class="p">.</span><span class="nx">listener</span><span class="p">.</span><span class="nx">acceptQueue</span> <span class="o">&lt;-</span> <span class="nx">s</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">	<span class="k">default</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;accept queue is full, drop connection&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">ipResp</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要逻辑是:</p>
+<ul>
+<li>校验一定是syn，ack包</li>
+<li>校验ack号是否正确，因为只发送了syn，那么ack号一定是<code>sendUnack+1</code></li>
+<li>将连接状态设置为<code>tcpip.TcpStateEstablished</code></li>
+<li>将<code>recvNext</code>设置为对端发送的seq号加1，因为对方的syn占用一个对方的seq号</li>
+<li>将<code>sendUnack</code>加1，因为对方发送了ack，代表对端收到了syn</li>
+<li><code>sendNext</code>没有变化，因为我们这次只是发送了ack，没有发送数据</li>
+</ul>
+<h1 id="accept"><code>accept()</code></h1>
+<p>accept函数是阻塞地从<code>acceptQueue</code>中获取一个socket，十分简单，实现如下：</p>
+<p><a href="https://github.com/beardnick/lab/blob/6365a837db2e19f3027e776692817eab51a01ad6/network/netstack/socket/socket.go#L78-L83" target="_blank" rel="noopener noreffer ">Accept</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">TcpSocket</span><span class="p">)</span> <span class="nf">Accept</span><span class="p">()</span> <span class="p">(</span><span class="nx">cfd</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">addr</span> <span class="nx">SocketAddr</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">cs</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">s</span><span class="p">.</span><span class="nx">acceptQueue</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">cs</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">cs</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">cs</span><span class="p">.</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">cs</span><span class="p">.</span><span class="nx">SocketAddr</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="总结">总结</h1>
+<p>终于讲完了三次握手。三次握手有非常多的细节，但是理解了seq号和ack号，以及发送窗口和接收窗口的计算，理解起来就相对容易了。
+我的实现也只是一个玩具型的三次握手实现，实际生产级别的实现要复杂得多。
+这篇文章中也还有非常多十分值得学习的内容没有展开来讲，比如并发安全是如何实现的、如何让代码更加可测试，这些我之后都会单开文章来讲解。
+如果觉得这篇文章对你有帮助，请点个赞，关注我，发现错误也请尽情指出。也欢迎star我的实验项目<a href="https://github.com/beardnick/lab" target="_blank" rel="noopener noreffer ">lab</a>，关注我的github page<a href="https://beardnick.github.io/qianz.github.io/zh-cn/" target="_blank" rel="noopener noreffer ">千舟</a>。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2025-02-19</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" data-title="自己动手编写tcp/ip协议栈3:tcp三次握手"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" data-title="自己动手编写tcp/ip协议栈3:tcp三次握手"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" data-title="自己动手编写tcp/ip协议栈3:tcp三次握手"><i data-svg-src="/qianz.github.io/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/" data-title="自己动手编写tcp/ip协议栈3:tcp三次握手"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/qianz.github.io/zh-cn/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" class="prev" rel="prev" title="自己动手编写tcp/ip协议栈2:tcp包生成"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>自己动手编写tcp/ip协议栈2:tcp包生成</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.123.7">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/qianz.github.io/zh-cn/" target="_blank">qianz</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="/qianz.github.io/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/qianz.github.io/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/qianz.github.io/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/qianz.github.io/js/theme.min.js"></script></body>
+</html>

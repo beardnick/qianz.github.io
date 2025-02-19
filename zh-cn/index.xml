@@ -3,9 +3,17 @@
         <title>千舟</title>
         <link>http://localhost:1313/qianz.github.io/zh-cn/</link>
         <description>Hugo theme even example site.</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 18 Feb 2025 09:59:00 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 19 Feb 2025 09:56:13 &#43;0800</lastBuildDate>
             <atom:link href="http://localhost:1313/qianz.github.io/zh-cn/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>自己动手编写tcp/ip协议栈3:tcp三次握手</title>
+    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/</link>
+    <pubDate>Wed, 19 Feb 2025 09:56:13 &#43;0800</pubDate>
+    <author>qianz</author>
+    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/</guid>
+    <description><![CDATA[数据结构 项目的主要数据结构及其交互方式如下图 虚线的箭头表示是异步调用，这里使用的是Go中的channel机制实现的。如果你想要使用其语言实现]]></description>
+</item>
+<item>
     <title>自己动手编写tcp/ip协议栈2:tcp包生成</title>
     <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/</link>
     <pubDate>Tue, 18 Feb 2025 09:59:00 &#43;0800</pubDate>
