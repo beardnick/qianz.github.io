@@ -3,7 +3,15 @@
         <title>所有文章 - 千舟</title>
         <link>http://localhost:1313/qianz.github.io/zh-cn/posts/</link>
         <description>所有文章 | 千舟</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 19 Feb 2025 09:56:13 &#43;0800</lastBuildDate><atom:link href="http://localhost:1313/qianz.github.io/zh-cn/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</lastBuildDate><atom:link href="http://localhost:1313/qianz.github.io/zh-cn/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>自己动手编写tcp/ip协议栈4:tcp数据传输和四次挥手</title>
+    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_4/</link>
+    <pubDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</pubDate>
+    <author>qianz</author>
+    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_4/</guid>
+    <description><![CDATA[数据传输 书接上回，连接建立成功后开始进行数据传输。 数据接收方 实现如下： handleData 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34]]></description>
+</item>
+<item>
     <title>自己动手编写tcp/ip协议栈3:tcp三次握手</title>
     <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/</link>
     <pubDate>Wed, 19 Feb 2025 09:56:13 &#43;0800</pubDate>
