@@ -1,46 +1,46 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>所有文章 - 千舟</title>
-        <link>http://localhost:1313/qianz.github.io/zh-cn/posts/</link>
+        <link>https://beardnick.github.io/qianz.github.io/zh-cn/posts/</link>
         <description>所有文章 | 千舟</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</lastBuildDate><atom:link href="http://localhost:1313/qianz.github.io/zh-cn/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</lastBuildDate><atom:link href="https://beardnick.github.io/qianz.github.io/zh-cn/posts/" rel="self" type="application/rss+xml" /><item>
     <title>自己动手编写tcp/ip协议栈4:tcp数据传输和四次挥手</title>
-    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_4/</link>
+    <link>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_4/</link>
     <pubDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</pubDate>
     <author>qianz</author>
-    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_4/</guid>
+    <guid>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_4/</guid>
     <description><![CDATA[数据传输 书接上回，连接建立成功后开始进行数据传输。 数据接收方 实现如下： handleData 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34]]></description>
 </item>
 <item>
     <title>自己动手编写tcp/ip协议栈3:tcp三次握手</title>
-    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/</link>
+    <link>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/</link>
     <pubDate>Wed, 19 Feb 2025 09:56:13 &#43;0800</pubDate>
     <author>qianz</author>
-    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/</guid>
+    <guid>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_3/</guid>
     <description><![CDATA[数据结构 项目的主要数据结构及其交互方式如下图 虚线的箭头表示是异步调用，这里使用的是Go中的channel机制实现的。如果你想要使用其语言实现]]></description>
 </item>
 <item>
     <title>自己动手编写tcp/ip协议栈2:tcp包生成</title>
-    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/</link>
+    <link>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/</link>
     <pubDate>Tue, 18 Feb 2025 09:59:00 &#43;0800</pubDate>
     <author>qianz</author>
-    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/</guid>
+    <guid>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/</guid>
     <description><![CDATA[数据结构 上一篇文章较为简单，所以没有详细讲解数据结构的设计，之后的文章难度会逐渐增加，所以这里先介绍一下数据结构的设计。计算机网络是分层结构]]></description>
 </item>
 <item>
     <title>自己动手编写tcp/ip协议栈1:tcp包解析</title>
-    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/</link>
+    <link>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/</link>
     <pubDate>Mon, 17 Feb 2025 15:27:18 &#43;0800</pubDate>
     <author>qianz</author>
-    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/</guid>
+    <guid>https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/</guid>
     <description><![CDATA[tuntap 由于linux内核控制了网络接口，所以应用层不能直接使用网络接口来处理网络包。linux通过提供tuntap虚拟网络接口的机制，让用户可以]]></description>
 </item>
 <item>
     <title>linux route</title>
-    <link>http://localhost:1313/qianz.github.io/zh-cn/posts/route/</link>
+    <link>https://beardnick.github.io/qianz.github.io/zh-cn/posts/route/</link>
     <pubDate>Sun, 07 Jul 2024 06:06:52 &#43;0800</pubDate>
     <author>qianz</author>
-    <guid>http://localhost:1313/qianz.github.io/zh-cn/posts/route/</guid>
+    <guid>https://beardnick.github.io/qianz.github.io/zh-cn/posts/route/</guid>
     <description><![CDATA[ip rule 和 ip route 网络包优先匹配 ip rule 中的规则，然后再被转到相应的 ip table 路由规则处理 1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default 这三条规则是内]]></description>
 </item>
 </channel>
