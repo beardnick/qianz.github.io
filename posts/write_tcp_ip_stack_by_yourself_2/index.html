@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Write TCP/IP Stack by Yourself (2): TCP Packet Generation - </title><meta name="Description" content="Hugo theme even example site."><meta property="og:title" content="Write TCP/IP Stack by Yourself (2): TCP Packet Generation" />
+<meta property="og:description" content="Data Structures The previous article was relatively simple, so we didn&rsquo;t discuss the data structure design in detail. As the following articles will gradually increase in complexity, let&rsquo;s first introduce the data structure design. Computer networks have a layered structure, and each layer except the physical layer has its corresponding packet structure. From the link layer to the application layer, each layer encapsulates the packet from the next layer, so we design our data structures in a similar nested fashion." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-02-18T09:59:00+08:00" />
+<meta property="article:modified_time" content="2025-02-18T09:59:00+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Write TCP/IP Stack by Yourself (2): TCP Packet Generation"/>
+<meta name="twitter:description" content="Data Structures The previous article was relatively simple, so we didn&rsquo;t discuss the data structure design in detail. As the following articles will gradually increase in complexity, let&rsquo;s first introduce the data structure design. Computer networks have a layered structure, and each layer except the physical layer has its corresponding packet structure. From the link layer to the application layer, each layer encapsulates the packet from the next layer, so we design our data structures in a similar nested fashion."/>
+<meta name="application-name" content="My cool site">
+<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" /><link rel="prev" href="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" /><link rel="next" href="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_3/" /><link rel="stylesheet" href="/qianz.github.io/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Write TCP/IP Stack by Yourself (2): TCP Packet Generation",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself_2\/"
+        },"genre": "posts","wordcount":  1298 ,
+        "url": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself_2\/","datePublished": "2025-02-18T09:59:00+08:00","dateModified": "2025-02-18T09:59:00+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "qianz"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/qianz.github.io/" title="">qianz</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/qianz.github.io/posts/" title="qianz"> Posts </a><a class="menu-item" href="/qianz.github.io/tags/"> Tags </a><a class="menu-item" href="/qianz.github.io/categories/"> Categories </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" selected>English</option><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/">简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/qianz.github.io/" title="">qianz</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/qianz.github.io/posts/" title="qianz">Posts</a><a class="menu-item" href="/qianz.github.io/tags/" title="">Tags</a><a class="menu-item" href="/qianz.github.io/categories/" title="">Categories</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" selected>English</option><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/">简体中文</option></select>
+                </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Write TCP/IP Stack by Yourself (2): TCP Packet Generation</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/qianz.github.io/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>qianz</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-02-18">2025-02-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1298 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;7 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#data-structures">Data Structures</a></li>
+    <li><a href="#ip-packet-generation">IP Packet Generation</a>
+      <ul>
+        <li><a href="#checksum">Checksum</a></li>
+      </ul>
+    </li>
+    <li><a href="#tcp-packet-generation">TCP Packet Generation</a>
+      <ul>
+        <li><a href="#checksum-1">Checksum</a></li>
+      </ul>
+    </li>
+    <li><a href="#checksum-calculation-performance-optimization">Checksum Calculation Performance Optimization</a></li>
+    <li><a href="#important-notes">Important Notes</a></li>
+    <li><a href="#recommended-reading">Recommended Reading</a></li>
+    <li><a href="#summary">Summary</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h1 id="data-structures">Data Structures</h1>
+<p>The previous article was relatively simple, so we didn&rsquo;t discuss the data structure design in detail. As the following articles will gradually increase in complexity, let&rsquo;s first introduce the data structure design. Computer networks have a layered structure, and each layer except the physical layer has its corresponding packet structure. From the link layer to the application layer, each layer encapsulates the packet from the next layer, so we design our data structures in a similar nested fashion. The basic construction method is as follows:</p>
+<p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/packet_test.go#L85" target="_blank" rel="noopener noreffer ">packet_test.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">pack</span> <span class="o">:=</span> <span class="nf">NewIPPack</span><span class="p">(</span><span class="nf">NewTcpPack</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">RawPack</span><span class="p">{}))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The IP object wraps the TCP object, which wraps the raw object, resulting in an IP object. The constructor functions take interfaces as parameters, so if you want, you can even wrap another IP object inside the TCP object:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">pack</span> <span class="o">:=</span> <span class="nf">NewIPPack</span><span class="p">(</span><span class="nf">NewTcpPack</span><span class="p">(</span><span class="nf">NewIPPack</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">RawPack</span><span class="p">{})))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This approach is not only theoretically possible but also practically meaningful. Some special network tools actually implement features like network proxying by wrapping raw data packets inside TCP.</p>
+<p>The network packet interface is defined as follows:</p>
+<p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/packet.go#L3-L6" target="_blank" rel="noopener noreffer ">packet.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">NetworkPacket</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">NetworkPacket</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">Encode</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The constructor is defined as:</p>
+<p><a href="https://github.com/beardnick/lab/blob/1213920ed1e5c48f8a6b028c49cae2490bbecd9e/network/netstack/tcpip/tcp.go#L62-L64" target="_blank" rel="noopener noreffer ">tcp.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewTcpPack</span><span class="p">(</span><span class="nx">payload</span> <span class="nx">NetworkPacket</span><span class="p">)</span> <span class="o">*</span><span class="nx">TcpPack</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">TcpPack</span><span class="p">{</span><span class="nx">Payload</span><span class="p">:</span> <span class="nx">payload</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The network packet interface definition is very simple: the <code>Decode</code> function decodes data into an object, and the <code>Encode</code> function encodes an object into data.</p>
+<h1 id="ip-packet-generation">IP Packet Generation</h1>
+<p>Here&rsquo;s the complete implementation:</p>
+<p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/ip.go#L80-L116" target="_blank" rel="noopener noreffer ">ip encode</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="o">*</span><span class="nx">IPPack</span><span class="p">)</span> <span class="nf">Encode</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">payload</span> <span class="p">[]</span><span class="kt">byte</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">err</span>     <span class="kt">error</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Encode</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span> <span class="p">=</span> <span class="nb">uint8</span><span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Version</span><span class="o">&lt;&lt;</span><span class="mi">4</span><span class="p">|</span><span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TypeOfService</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TotalLength</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">i</span><span class="p">.</span><span class="nx">TotalLength</span> <span class="p">=</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="p">)</span> <span class="o">+</span> <span class="nb">uint16</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">payload</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TotalLength</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Identification</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">Flags</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">13</span><span class="p">|</span><span class="nx">i</span><span class="p">.</span><span class="nx">FragmentOffset</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">TimeToLive</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">SrcIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">DstIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Options</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span> <span class="p">=</span> <span class="nf">calculateIPChecksum</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">PutUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">],</span> <span class="nx">i</span><span class="p">.</span><span class="nx">HeaderChecksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">payload</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">data</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Most field conversions involve basic bit operations, which we won&rsquo;t explain in detail. The checksum generation needs attention.
+Checksum calculation is a bit complicated and isn&rsquo;t a key focus of the TCP/IP protocol. If you want to quickly implement a working TCP/IP protocol, you can temporarily skip this part and just copy existing implementation code.
+However, we can&rsquo;t ignore checksums entirely, as packets with invalid checksums will be discarded.</p>
+<h2 id="checksum">Checksum</h2>
+<p>To calculate the checksum, we first generate the IP header data packet with the checksum field set to 0, then calculate the checksum on this data packet.
+Here&rsquo;s the original text from the RFC:
+<a href="https://datatracker.ietf.org/doc/html/rfc1071#autoid-1" target="_blank" rel="noopener noreffer ">checksum</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">In outline, the Internet checksum algorithm is very simple:
+</span></span><span class="line"><span class="cl">(1)  Adjacent octets to be checksummed are paired to form 16-bit
+</span></span><span class="line"><span class="cl">    integers, and the 1&#39;s complement sum of these 16-bit integers is
+</span></span><span class="line"><span class="cl">    formed.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Implementation:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">calculateIPChecksum</span><span class="p">(</span><span class="nx">headerData</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">headerData</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headerData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">headerData</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">^</span><span class="nf">OnesComplementSum</span><span class="p">(</span><span class="nx">headerData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="tcp-packet-generation">TCP Packet Generation</h1>
+<p><a href="https://github.com/beardnick/lab/blob/c030899077b98d44d8f750d8371befa457a87de0/network/netstack/tcpip/tcp.go#L111-L141" target="_blank" rel="noopener noreffer ">tcp encode</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="nf">Encode</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">SrcPort</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">DstPort</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">SequenceNumber</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">AckNumber</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">DataOffset</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">t</span><span class="p">.</span><span class="nx">DataOffset</span> <span class="p">=</span> <span class="nb">uint8</span><span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="p">((</span><span class="nx">t</span><span class="p">.</span><span class="nx">DataOffset</span><span class="o">&gt;&gt;</span><span class="mi">2</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">4</span><span class="p">)|</span><span class="nx">t</span><span class="p">.</span><span class="nx">Reserved</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Flags</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">WindowSize</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">UrgentPointer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Options</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Encode</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">payload</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">t</span><span class="p">.</span><span class="nx">PseudoHeader</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;pseudo header is required to calculate tcp checksum&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span> <span class="p">=</span> <span class="nf">calculateTcpChecksum</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">PseudoHeader</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">PutUint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">18</span><span class="p">],</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Checksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">data</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>TCP packet generation is also only complex in terms of checksum calculation. Similarly, if you want to quickly implement a working TCP/IP protocol, you can temporarily skip this part and just copy existing implementation code.</p>
+<h2 id="checksum-1">Checksum</h2>
+<p>TCP packet checksum calculation requires adding some extra data to the TCP header before calculating the checksum. Here&rsquo;s the original text from the RFC:</p>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc9293" target="_blank" rel="noopener noreffer ">pseudo-header</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">The checksum also covers a pseudo-header (Figure 2) conceptually prefixed to the TCP header.
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">|           Source Address          |
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">|         Destination Address       |
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">|  zero  |  PTCL  |    TCP Length   |
+</span></span><span class="line"><span class="cl">+--------+--------+--------+--------+
+</span></span><span class="line"><span class="cl">Figure 2: IPv4 Pseudo-header
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Pseudo-header components for IPv4:
+</span></span><span class="line"><span class="cl">    Source Address: the IPv4 source address in network byte order
+</span></span><span class="line"><span class="cl">    Destination Address: the IPv4 destination address in network byte order
+</span></span><span class="line"><span class="cl">    zero: bits set to zero
+</span></span><span class="line"><span class="cl">    PTCL: the protocol number from the IP header
+</span></span><span class="line"><span class="cl">    TCP Length: the TCP header length plus the data length in octets (this is not an explicitly transmitted quantity but is computed), and it does not count the 12 octets of the pseudo-header.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>So we first need to generate the pseudo-header, then calculate the checksum. The pseudo-header data can be easily obtained from the IP packet. After generating the new packet, we can use the same function used for calculating IP checksums. Here&rsquo;s the final implementation:</p>
+<p><a href="https://github.com/beardnick/lab/blob/c030899077b98d44d8f750d8371befa457a87de0/network/netstack/tcpip/tcp.go#L143-L165" target="_blank" rel="noopener noreffer ">tcp checksum</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="nf">SetPseudoHeader</span><span class="p">(</span><span class="nx">srcIP</span><span class="p">,</span> <span class="nx">dstIP</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">t</span><span class="p">.</span><span class="nx">PseudoHeader</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">PseudoHeader</span><span class="p">{</span><span class="nx">SrcIP</span><span class="p">:</span> <span class="nx">srcIP</span><span class="p">,</span> <span class="nx">DstIP</span><span class="p">:</span> <span class="nx">dstIP</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">calculateTcpChecksum</span><span class="p">(</span><span class="nx">pseudo</span> <span class="o">*</span><span class="nx">PseudoHeader</span><span class="p">,</span> <span class="nx">headerPayloadData</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">length</span> <span class="o">:=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">headerPayloadData</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pseudoHeader</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nx">pseudo</span><span class="p">.</span><span class="nx">SrcIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nx">pseudo</span><span class="p">.</span><span class="nx">DstIP</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">ProtocolTCP</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pseudoHeader</span> <span class="p">=</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">AppendUint32</span><span class="p">(</span><span class="nx">pseudoHeader</span><span class="p">,</span> <span class="nx">length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">sumData</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sumData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">sumData</span><span class="p">,</span> <span class="nx">pseudoHeader</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sumData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">sumData</span><span class="p">,</span> <span class="nx">headerPayloadData</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">sumData</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sumData</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">sumData</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">^</span><span class="nf">OnesComplementSum</span><span class="p">(</span><span class="nx">sumData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="checksum-calculation-performance-optimization">Checksum Calculation Performance Optimization</h1>
+<p>There are many ways to optimize checksum calculation. Here&rsquo;s one optimization method using uint32.
+By using uint32 directly, all overflow parts are added to the high 16 bits. Then we add the high 16 bits back to the low 16 bits. If it overflows again, we continue adding back to the low 16 bits until there&rsquo;s no more overflow.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">OnesComplementSum</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">sum</span> <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">2</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sum</span> <span class="o">+=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span> <span class="p">:</span> <span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Add the carry bits back in
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="nx">sum</span> <span class="p">&gt;</span> <span class="mh">0xffff</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sum</span> <span class="p">=</span> <span class="p">(</span><span class="nx">sum</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nx">sum</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">sum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="important-notes">Important Notes</h1>
+<ul>
+<li>My TCP/IP stack project is primarily for educational purposes, so I prioritize code readability over performance. Many implementations are not optimal. Production-level code would include extensive performance optimizations, error handling, and boundary checks, sacrificing some readability for higher performance and security.</li>
+<li>In the current implementation, the IP ID is always 0 to simplify implementation. The IP ID is mainly used in IP fragmentation, so we can ignore it for now. The current implementation works fine for small packets.</li>
+<li>Both IP and TCP have options fields that involve some extended network functionality, which can also be ignored for initial implementation.</li>
+</ul>
+<h1 id="recommended-reading">Recommended Reading</h1>
+<ul>
+<li><a href="https://github.com/google/gopacket" target="_blank" rel="noopener noreffer ">General Network Packet Processing Library</a></li>
+<li><a href="https://github.com/google/netstack" target="_blank" rel="noopener noreffer ">Production-Level User-Space TCP/IP Stack Implementation</a></li>
+</ul>
+<h1 id="summary">Summary</h1>
+<p>At this point, we have completed TCP packet generation. In the next article, we will start implementing the TCP three-way handshake.</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2025-02-18</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" data-title="Write TCP/IP Stack by Yourself (2): TCP Packet Generation"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" data-title="Write TCP/IP Stack by Yourself (2): TCP Packet Generation"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" data-title="Write TCP/IP Stack by Yourself (2): TCP Packet Generation"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" data-title="Write TCP/IP Stack by Yourself (2): TCP Packet Generation"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/qianz.github.io/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" class="prev" rel="prev" title="Write TCP/IP Stack by Yourself (1): TCP Packet Parsing"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Write TCP/IP Stack by Yourself (1): TCP Packet Parsing</a>
+            <a href="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_3/" class="next" rel="next" title="Write TCP/IP Stack by Yourself (3): TCP Three-Way Handshake">Write TCP/IP Stack by Yourself (3): TCP Three-Way Handshake<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.123.7">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/qianz.github.io/" target="_blank">qianz</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/qianz.github.io/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-R8VEWR2RP4', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-R8VEWR2RP4" async></script></body>
+</html>

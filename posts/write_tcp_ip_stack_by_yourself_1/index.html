@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
-        <title>自己动手编写tcp/ip协议栈1:tcp包解析 - 千舟</title><meta name="Description" content="Hugo theme even example site."><meta property="og:title" content="自己动手编写tcp/ip协议栈1:tcp包解析" />
-<meta property="og:description" content="tuntap 由于linux内核控制了网络接口，所以应用层不能直接使用网络接口来处理网络包。linux通过提供tuntap虚拟网络接口的机制，让用户可以" />
+        <title>Write TCP/IP Stack by Yourself (1): TCP Packet Parsing - </title><meta name="Description" content="Hugo theme even example site."><meta property="og:title" content="Write TCP/IP Stack by Yourself (1): TCP Packet Parsing" />
+<meta property="og:description" content="TunTap Since the Linux kernel controls network interfaces, applications cannot directly use network interfaces to handle network packets. Linux provides the tuntap virtual network interface mechanism to allow users to handle raw network packets at the application layer.
+Example of Using TUN TunTap can create two types of virtual network interfaces: TUN and TAP. TAP is a layer 2 network interface that provides MAC frames. TUN is a layer 3 network interface that provides IP packets." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2025-02-17T15:27:18+08:00" />
 <meta property="article:modified_time" content="2025-02-17T15:27:18+08:00" /><meta property="og:site_name" content="My cool site" />
 
-<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="自己动手编写tcp/ip协议栈1:tcp包解析"/>
-<meta name="twitter:description" content="tuntap 由于linux内核控制了网络接口，所以应用层不能直接使用网络接口来处理网络包。linux通过提供tuntap虚拟网络接口的机制，让用户可以"/>
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Write TCP/IP Stack by Yourself (1): TCP Packet Parsing"/>
+<meta name="twitter:description" content="TunTap Since the Linux kernel controls network interfaces, applications cannot directly use network interfaces to handle network packets. Linux provides the tuntap virtual network interface mechanism to allow users to handle raw network packets at the application layer.
+Example of Using TUN TunTap can create two types of virtual network interfaces: TUN and TAP. TAP is a layer 2 network interface that provides MAC frames. TUN is a layer 3 network interface that provides IP packets."/>
 <meta name="application-name" content="My cool site">
 <meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" /><link rel="prev" href="https://beardnick.github.io/qianz.github.io/zh-cn/posts/route/" /><link rel="next" href="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" /><link rel="stylesheet" href="/qianz.github.io/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" /><link rel="prev" href="https://beardnick.github.io/qianz.github.io/posts/route/" /><link rel="next" href="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" /><link rel="stylesheet" href="/qianz.github.io/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
-        "headline": "自己动手编写tcp/ip协议栈1:tcp包解析",
-        "inLanguage": "zh-CN",
+        "headline": "Write TCP/IP Stack by Yourself (1): TCP Packet Parsing",
+        "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/beardnick.github.io\/qianz.github.io\/zh-cn\/posts\/write_tcp_ip_stack_by_yourself_1\/"
-        },"genre": "posts","wordcount":  1811 ,
-        "url": "https:\/\/beardnick.github.io\/qianz.github.io\/zh-cn\/posts\/write_tcp_ip_stack_by_yourself_1\/","datePublished": "2025-02-17T15:27:18+08:00","dateModified": "2025-02-17T15:27:18+08:00","publisher": {
+            "@id": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself_1\/"
+        },"genre": "posts","wordcount":  1239 ,
+        "url": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself_1\/","datePublished": "2025-02-17T15:27:18+08:00","dateModified": "2025-02-17T15:27:18+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -41,14 +43,14 @@
         <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
     <div class="header-wrapper">
         <div class="header-title">
-            <a href="/qianz.github.io/zh-cn/" title="千舟">千舟</a>
+            <a href="/qianz.github.io/" title="">qianz</a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/zh-cn/qianz.github.io/posts/"> 文章 </a><a class="menu-item" href="/zh-cn/qianz.github.io/tags/"> 标签 </a><a class="menu-item" href="/zh-cn/qianz.github.io/categories/"> 分类 </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+            <div class="menu-inner"><a class="menu-item" href="/qianz.github.io/posts/" title="qianz"> Posts </a><a class="menu-item" href="/qianz.github.io/tags/"> Tags </a><a class="menu-item" href="/qianz.github.io/categories/"> Categories </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
                     <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
                     <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/">English</option><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" selected>简体中文</option></select>
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" selected>English</option><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/">简体中文</option></select>
                 </a></div>
         </div>
     </div>
@@ -56,54 +58,54 @@
     <div class="header-container">
         <div class="header-wrapper">
             <div class="header-title">
-                <a href="/qianz.github.io/zh-cn/" title="千舟">千舟</a>
+                <a href="/qianz.github.io/" title="">qianz</a>
             </div>
             <div class="menu-toggle" id="menu-toggle-mobile">
                 <span></span><span></span><span></span>
             </div>
         </div>
-        <div class="menu" id="menu-mobile"><a class="menu-item" href="/zh-cn/qianz.github.io/posts/" title="">文章</a><a class="menu-item" href="/zh-cn/qianz.github.io/tags/" title="">标签</a><a class="menu-item" href="/zh-cn/qianz.github.io/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/qianz.github.io/posts/" title="qianz">Posts</a><a class="menu-item" href="/qianz.github.io/tags/" title="">Tags</a><a class="menu-item" href="/qianz.github.io/categories/" title="">Categories</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
                     <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/">English</option><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" selected>简体中文</option></select>
+                    <select class="language-select" onchange="location = this.value;"><option value="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" selected>English</option><option value="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/">简体中文</option></select>
                 </a></div>
     </div>
 </header><main class="main">
                 <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
+            <h2 class="toc-title">Contents</h2>
             <div class="toc-content always-active" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">自己动手编写tcp/ip协议栈1:tcp包解析</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/qianz.github.io/zh-cn/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>qianz</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-02-17">2025-02-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1811 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Write TCP/IP Stack by Yourself (1): TCP Packet Parsing</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/qianz.github.io/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>qianz</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-02-17">2025-02-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1239 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;6 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
-                    <span>目录</span>
+                    <span>Contents</span>
                     <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
                 </div>
                 <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
   <ul>
-    <li><a href="#tuntap">tuntap</a>
+    <li><a href="#tuntap">TunTap</a>
       <ul>
-        <li><a href="#tun使用示例">tun使用示例</a></li>
+        <li><a href="#example-of-using-tun">Example of Using TUN</a></li>
       </ul>
     </li>
-    <li><a href="#解析ip包">解析ip包</a>
+    <li><a href="#parsing-ip-packets">Parsing IP Packets</a>
       <ul>
-        <li><a href="#网络字节序">网络字节序</a></li>
-        <li><a href="#ip头长度">ip头长度</a></li>
+        <li><a href="#network-byte-order">Network Byte Order</a></li>
+        <li><a href="#ip-header-length">IP Header Length</a></li>
       </ul>
     </li>
-    <li><a href="#解析tcp包">解析tcp包</a></li>
-    <li><a href="#总结">总结</a></li>
+    <li><a href="#parsing-tcp-packets">Parsing TCP Packets</a></li>
+    <li><a href="#summary">Summary</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h1 id="tuntap">tuntap</h1>
-<p>由于linux内核控制了网络接口，所以应用层不能直接使用网络接口来处理网络包。linux通过提供tuntap虚拟网络接口的机制，让用户可以在应用层处理原始的网络包。</p>
-<h2 id="tun使用示例">tun使用示例</h2>
-<p>tuntap可以创建两种虚拟网络接口：tun和tap。tap是二层网络接口，提供mac帧。tun是三层网络接口，提供ip包。
-我们处理tcp,ip协议，只需要使用tun接口，如果要处理arp，icmp协议则需要使用tap接口。这里只演示tun接口的使用。</p>
+            </div><div class="content" id="content"><h1 id="tuntap">TunTap</h1>
+<p>Since the Linux kernel controls network interfaces, applications cannot directly use network interfaces to handle network packets. Linux provides the tuntap virtual network interface mechanism to allow users to handle raw network packets at the application layer.</p>
+<h2 id="example-of-using-tun">Example of Using TUN</h2>
+<p>TunTap can create two types of virtual network interfaces: TUN and TAP. TAP is a layer 2 network interface that provides MAC frames. TUN is a layer 3 network interface that provides IP packets.
+We only need to use the TUN interface to handle TCP/IP protocols. If you need to handle ARP and ICMP protocols, you&rsquo;ll need to use the TAP interface. Here we&rsquo;ll demonstrate using the TUN interface.</p>
 <p><a href="https://github.com/beardnick/lab/blob/master/scripts/tuntap_test.go#L13-L45" target="_blank" rel="noopener noreffer ">test tun</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -177,16 +179,16 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>使用curl发送一个简单的请求测试一下</p>
+</div><p>Let&rsquo;s test it by sending a simple request:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl -v  http://11.0.0.2/hello
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl -v http://11.0.0.2/hello
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>将会得到类似下面的输出，这就是一个原始的ip包了</p>
+</div><p>You&rsquo;ll get output similar to this, which is a raw IP packet:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -201,8 +203,8 @@
 </span></span><span class="line"><span class="cl">00000030  bf b6 00 fa 00 00 00 00  01 03 03 07              |............|
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h1 id="解析ip包">解析ip包</h1>
-<p>直接看rfc791的对ip包的格式定义</p>
+</div><h1 id="parsing-ip-packets">Parsing IP Packets</h1>
+<p>Let&rsquo;s look at the IP packet format definition from RFC791:</p>
 <p><a href="https://datatracker.ietf.org/doc/html/rfc791#section-3.1" target="_blank" rel="noopener noreffer ">rfc791#section-3.1</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -240,7 +242,7 @@
 </span></span><span class="line"><span class="cl">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>对照着rfc可以来解析如下这个包</p>
+</div><p>Let&rsquo;s analyze this packet:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -255,14 +257,14 @@
 </span></span><span class="line"><span class="cl">00000030  bf b6 00 fa 00 00 00 00  01 03 03 07              |............|
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>结果如下</p>
+</div><p>The breakdown is as follows:</p>
 <table>
 <thead>
 <tr>
-<th>IP 偏移量</th>
-<th>TCP 偏移量</th>
-<th>字节值</th>
-<th>描述</th>
+<th>IP Offset</th>
+<th>TCP Offset</th>
+<th>Byte Value</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
@@ -270,77 +272,77 @@
 <td>4/8</td>
 <td></td>
 <td>0x4</td>
-<td>IP 版本：IPv4</td>
+<td>IP Version: IPv4</td>
 </tr>
 <tr>
 <td>1</td>
 <td></td>
 <td>0x5</td>
-<td>IP 首部长度为 5个32位数字：5 * 4 = 20 字节</td>
+<td>IP Header Length: 5 * 4 = 20 bytes</td>
 </tr>
 <tr>
 <td>2</td>
 <td></td>
 <td>0x00</td>
-<td>服务类型</td>
+<td>Type of Service</td>
 </tr>
 <tr>
 <td>4</td>
 <td></td>
 <td>0x003c</td>
-<td>总长度为 60 字节</td>
+<td>Total Length: 60 bytes</td>
 </tr>
 <tr>
 <td>6</td>
 <td></td>
 <td>0x8040</td>
-<td>IP 标识</td>
+<td>IP Identification</td>
 </tr>
 <tr>
 <td>6 + 3/8</td>
 <td></td>
 <td>010</td>
-<td>标志位：0: 保留位；必须为 0，1: 禁止分片 (DF) 0: 还有更多分片 (MF)</td>
+<td>Flags: 0: Reserved (must be 0), 1: Don&rsquo;t Fragment (DF), 0: More Fragments (MF)</td>
 </tr>
 <tr>
 <td>8</td>
 <td></td>
 <td>0 0000 0000 0000</td>
-<td>分片偏移量：此处为 0</td>
+<td>Fragment Offset: 0</td>
 </tr>
 <tr>
 <td>9</td>
 <td></td>
 <td>0x40</td>
-<td>生存时间：64 秒</td>
+<td>Time to Live: 64 seconds</td>
 </tr>
 <tr>
 <td>10</td>
 <td></td>
 <td>0x06</td>
-<td>协议：0x06 表示 TCP</td>
+<td>Protocol: 0x06 indicates TCP</td>
 </tr>
 <tr>
 <td>12</td>
 <td></td>
 <td>0xa479</td>
-<td>首部校验和</td>
+<td>Header Checksum</td>
 </tr>
 <tr>
 <td>16</td>
 <td></td>
 <td>0x0b 00 00 01</td>
-<td>源 IP 地址：11.0.0.1</td>
+<td>Source IP: 11.0.0.1</td>
 </tr>
 <tr>
 <td>20</td>
 <td></td>
 <td>0x0b 00 00 02</td>
-<td>目的 IP 地址：11.0.0.2</td>
+<td>Destination IP: 11.0.0.2</td>
 </tr>
 </tbody>
 </table>
-<p>解析的代码如下</p>
+<p>Here&rsquo;s the code to parse it:</p>
 <p><a href="https://github.com/beardnick/lab/blob/62e2f4efaff1211860bdb3ea14d0006e7804f56a/network/netstack/tcpip/ip.go#L55-L78" target="_blank" rel="noopener noreffer ">ip.go</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -371,36 +373,35 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="o">*</span><span class="nx">IPPack</span><span class="p">)</span> <span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">IPPack</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">header</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">IPHeader</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">Version</span><span class="p">:</span>        <span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">HeaderLength</span><span class="p">:</span>   <span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0f</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">TypeOfService</span><span class="p">:</span>  <span class="nx">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">TotalLength</span><span class="p">:</span>    <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">Identification</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">Flags</span><span class="p">:</span>          <span class="nx">data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">FragmentOffset</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0x1fff</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">TimeToLive</span><span class="p">:</span>     <span class="nx">data</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">Protocol</span><span class="p">:</span>       <span class="nx">data</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">HeaderChecksum</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">SrcIP</span><span class="p">:</span>          <span class="nx">net</span><span class="p">.</span><span class="nf">IP</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">DstIP</span><span class="p">:</span>          <span class="nx">net</span><span class="p">.</span><span class="nf">IP</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">20</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">header</span><span class="p">.</span><span class="nx">Options</span> <span class="p">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="nx">header</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">i</span><span class="p">.</span><span class="nx">IPHeader</span> <span class="p">=</span> <span class="nx">header</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">header</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="p">:])</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span> <span class="p">=</span> <span class="nx">payload</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">i</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">header</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">IPHeader</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Version</span><span class="p">:</span>        <span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">HeaderLength</span><span class="p">:</span>   <span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0f</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">TypeOfService</span><span class="p">:</span>  <span class="nx">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">TotalLength</span><span class="p">:</span>    <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Identification</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Flags</span><span class="p">:</span>          <span class="nx">data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">FragmentOffset</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0x1fff</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">TimeToLive</span><span class="p">:</span>     <span class="nx">data</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Protocol</span><span class="p">:</span>       <span class="nx">data</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">HeaderChecksum</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">SrcIP</span><span class="p">:</span>          <span class="nx">net</span><span class="p">.</span><span class="nf">IP</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">DstIP</span><span class="p">:</span>          <span class="nx">net</span><span class="p">.</span><span class="nf">IP</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">20</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">header</span><span class="p">.</span><span class="nx">Options</span> <span class="p">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="nx">header</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">i</span><span class="p">.</span><span class="nx">IPHeader</span> <span class="p">=</span> <span class="nx">header</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">header</span><span class="p">.</span><span class="nx">HeaderLength</span><span class="p">:])</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">i</span><span class="p">.</span><span class="nx">Payload</span> <span class="p">=</span> <span class="nx">payload</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">i</span><span class="p">,</span> <span class="kc">nil</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>需要注意的有以下几点</p>
-<h2 id="网络字节序">网络字节序</h2>
-<p>网络字节序都是大端的。大端和小端有些时候容易搞混，从网络包解析的场景来说就是解析包时一个数据的高位字节排在前面。
-例如<code>0x1234</code>，大端表示为<code>0x1234</code>，小端表示为<code>0x3412</code>。可以发现大端表示法和我们日常书写的顺序一致。
-golang中代码实现上也很简单。</p>
+</div><p>Important points to note:</p>
+<h2 id="network-byte-order">Network Byte Order</h2>
+<p>Network byte order is always big-endian. When parsing packets, the high-order bytes come first. For example, <code>0x1234</code> is represented as <code>0x1234</code> in big-endian and <code>0x3412</code> in little-endian. Big-endian matches our normal writing order.</p>
+<p>The Go implementation is straightforward:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -415,25 +416,25 @@ golang中代码实现上也很简单。</p>
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">bigEndian</span><span class="p">)</span> <span class="nf">Uint16</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">_</span> <span class="p">=</span> <span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1">// bounds check hint to compiler; see golang.org/issue/14808
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">|</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&lt;&lt;</span><span class="mi">8</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">_</span> <span class="p">=</span> <span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1">// bounds check hint to compiler; see golang.org/issue/14808
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">|</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&lt;&lt;</span><span class="mi">8</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">littleEndian</span><span class="p">)</span> <span class="nf">Uint16</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">uint16</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">_</span> <span class="p">=</span> <span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1">// bounds check hint to compiler; see golang.org/issue/14808
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">|</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">&lt;&lt;</span><span class="mi">8</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">_</span> <span class="p">=</span> <span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1">// bounds check hint to compiler; see golang.org/issue/14808
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">|</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">&lt;&lt;</span><span class="mi">8</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="ip头长度">ip头长度</h2>
-<p>ip包头的长度单位是32位数字，所以需要乘以4才是字节数。rfc原话是</p>
+</div><h2 id="ip-header-length">IP Header Length</h2>
+<p>The IP header length is measured in 32-bit words, so we multiply by 4 to get the byte count. As stated in the RFC:</p>
 <blockquote>
 <p>IHL:  4 bits
 Internet Header Length is the length of the internet header in 32
 bit words, and thus points to the beginning of the data.  Note that
 the minimum value for a correct header is 5.</p>
 </blockquote>
-<h1 id="解析tcp包">解析tcp包</h1>
+<h1 id="parsing-tcp-packets">Parsing TCP Packets</h1>
 <p><a href="https://datatracker.ietf.org/doc/html/rfc9293#name-header-format" target="_blank" rel="noopener noreffer ">rfc9293#name-header-format</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -483,29 +484,14 @@ the minimum value for a correct header is 5.</p>
 </span></span><span class="line"><span class="cl">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>对照着rfc可以来解析如下这个包</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">00000000  45 00 00 3c 80 40 40 00  40 06 a4 79 0b 00 00 01  |E..&lt;.@@.@..y....|
-</span></span><span class="line"><span class="cl">00000010  0b 00 00 02 bb f8 00 50  08 a8 4a 04 00 00 00 00  |.......P..J.....|
-</span></span><span class="line"><span class="cl">00000020  a0 02 fa f0 67 67 00 00  02 04 05 b4 04 02 08 0a  |....gg..........|
-</span></span><span class="line"><span class="cl">00000030  bf b6 00 fa 00 00 00 00  01 03 03 07              |............|
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>结果如下</p>
+</div><p>Let&rsquo;s analyze the TCP portion of our packet:</p>
 <table>
 <thead>
 <tr>
-<th>IP 偏移量</th>
-<th>TCP 偏移量</th>
-<th>字节值</th>
-<th>描述</th>
+<th>IP Offset</th>
+<th>TCP Offset</th>
+<th>Byte Value</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
@@ -513,71 +499,71 @@ the minimum value for a correct header is 5.</p>
 <td>22</td>
 <td>2</td>
 <td>0xbbf8</td>
-<td>源端口：48120</td>
+<td>Source Port: 48120</td>
 </tr>
 <tr>
 <td>24</td>
 <td>4</td>
 <td>0x0050</td>
-<td>目的端口：80</td>
+<td>Destination Port: 80</td>
 </tr>
 <tr>
 <td>28</td>
 <td>8</td>
 <td>0x08a84a04</td>
-<td>序列号：145246724</td>
+<td>Sequence Number: 145246724</td>
 </tr>
 <tr>
 <td>32</td>
 <td>12</td>
 <td>0x00000000</td>
-<td>确认号：0</td>
+<td>Acknowledgment Number: 0</td>
 </tr>
 <tr>
 <td>33 + 4/8</td>
-<td>13  + 4/8</td>
+<td>13 + 4/8</td>
 <td>0xa</td>
-<td>首部长度为10个32位数字：10 * 4 = 40 字节</td>
+<td>Header Length: 10 * 4 = 40 bytes</td>
 </tr>
 <tr>
 <td>33 + 10/8</td>
-<td>13  + 10/8</td>
+<td>13 + 10/8</td>
 <td>0000 00</td>
-<td>保留位</td>
+<td>Reserved</td>
 </tr>
 <tr>
 <td>34</td>
 <td>14</td>
 <td>00 0010</td>
-<td>标志位 URG:0 ACK:0 PSH:0 RST:0 SYN:1 FIN:0，所以是syn包</td>
+<td>Flags URG:0 ACK:0 PSH:0 RST:0 SYN:1 FIN:0 (SYN packet)</td>
 </tr>
 <tr>
 <td>36</td>
 <td>16</td>
 <td>0xfaf0</td>
-<td>窗口大小：64240</td>
+<td>Window Size: 64240</td>
 </tr>
 <tr>
 <td>38</td>
 <td>18</td>
 <td>0x6767</td>
-<td>校验和</td>
+<td>Checksum</td>
 </tr>
 <tr>
 <td>40</td>
 <td>20</td>
 <td>0x0000</td>
-<td>紧急指针</td>
+<td>Urgent Pointer</td>
 </tr>
 <tr>
 <td>60</td>
 <td>40</td>
 <td></td>
-<td>TCP 选项和填充</td>
+<td>TCP Options and Padding</td>
 </tr>
 </tbody>
 </table>
-<p>解析的代码如下</p>
+<p>Here&rsquo;s the code to parse it:</p>
 <p><a href="https://github.com/beardnick/lab/blob/1213920ed1e5c48f8a6b028c49cae2490bbecd9e/network/netstack/tcpip/tcp.go#L88-L109" target="_blank" rel="noopener noreffer ">tcp.go</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -606,45 +592,45 @@ the minimum value for a correct header is 5.</p>
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">TcpPack</span><span class="p">)</span> <span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">NetworkPacket</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">header</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">TcpHeader</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">SrcPort</span><span class="p">:</span>        <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">DstPort</span><span class="p">:</span>        <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">SequenceNumber</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint32</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">AckNumber</span><span class="p">:</span>      <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint32</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">12</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">DataOffset</span><span class="p">:</span>     <span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">Reserved</span><span class="p">:</span>       <span class="nx">data</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">Flags</span><span class="p">:</span>          <span class="nx">data</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">WindowSize</span><span class="p">:</span>     <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">14</span><span class="p">:</span><span class="mi">16</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">Checksum</span><span class="p">:</span>       <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">18</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">UrgentPointer</span><span class="p">:</span>  <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">18</span><span class="p">:</span><span class="mi">20</span><span class="p">]),</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">header</span><span class="p">.</span><span class="nx">Options</span> <span class="p">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="nx">header</span><span class="p">.</span><span class="nx">DataOffset</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">t</span><span class="p">.</span><span class="nx">TcpHeader</span> <span class="p">=</span> <span class="nx">header</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">header</span><span class="p">.</span><span class="nx">DataOffset</span><span class="p">:])</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span> <span class="p">=</span> <span class="nx">payload</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">t</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">header</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">TcpHeader</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">SrcPort</span><span class="p">:</span>        <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">DstPort</span><span class="p">:</span>        <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">SequenceNumber</span><span class="p">:</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint32</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">AckNumber</span><span class="p">:</span>      <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint32</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">12</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">DataOffset</span><span class="p">:</span>     <span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Reserved</span><span class="p">:</span>       <span class="nx">data</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Flags</span><span class="p">:</span>          <span class="nx">data</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">WindowSize</span><span class="p">:</span>     <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">14</span><span class="p">:</span><span class="mi">16</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Checksum</span><span class="p">:</span>       <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">18</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">UrgentPointer</span><span class="p">:</span>  <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint16</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">18</span><span class="p">:</span><span class="mi">20</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">header</span><span class="p">.</span><span class="nx">Options</span> <span class="p">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="nx">header</span><span class="p">.</span><span class="nx">DataOffset</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">t</span><span class="p">.</span><span class="nx">TcpHeader</span> <span class="p">=</span> <span class="nx">header</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">header</span><span class="p">.</span><span class="nx">DataOffset</span><span class="p">:])</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">t</span><span class="p">.</span><span class="nx">Payload</span> <span class="p">=</span> <span class="nx">payload</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">t</span><span class="p">,</span> <span class="kc">nil</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>有了解析ip包的经验后解析tcp包就简单了，需要注意的点和解析ip包时类似，就不做赘述了。</p>
-<h1 id="总结">总结</h1>
-<p>本次我们学习了tuntap中的tun的使用方法，并使用tun接口解析了ip包和tcp包，这是我们自己实现tcp/ip协议栈的第一步。
-文章中的代码在<a href="https://github.com/beardnick/lab/tree/master/network/netstack" target="_blank" rel="noopener noreffer ">这里</a>查看。</p>
+</div><p>The parsing principles are similar to IP packet parsing, so we won&rsquo;t repeat the details.</p>
+<h1 id="summary">Summary</h1>
+<p>In this article, we learned how to use TUN in TunTap and how to parse IP and TCP packets. This is our first step in implementing our own TCP/IP stack.
+The code discussed in this article can be found <a href="https://github.com/beardnick/lab/tree/master/network/netstack" target="_blank" rel="noopener noreffer ">here</a>.</p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-02-17</span>
+                <span>Updated on 2025-02-17</span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" data-title="自己动手编写tcp/ip协议栈1:tcp包解析"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" data-title="自己动手编写tcp/ip协议栈1:tcp包解析"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" data-title="自己动手编写tcp/ip协议栈1:tcp包解析"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/" data-title="自己动手编写tcp/ip协议栈1:tcp包解析"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" data-title="Write TCP/IP Stack by Yourself (1): TCP Packet Parsing"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" data-title="Write TCP/IP Stack by Yourself (1): TCP Packet Parsing"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" data-title="Write TCP/IP Stack by Yourself (1): TCP Packet Parsing"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/" data-title="Write TCP/IP Stack by Yourself (1): TCP Packet Parsing"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>
@@ -652,26 +638,26 @@ the minimum value for a correct header is 5.</p>
     <div class="post-info-more">
         <section class="post-tags"></section>
         <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/qianz.github.io/zh-cn/">主页</a></span>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/qianz.github.io/">Home</a></span>
         </section>
     </div>
 
-    <div class="post-nav"><a href="/qianz.github.io/zh-cn/posts/route/" class="prev" rel="prev" title="linux route"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>linux route</a>
-            <a href="/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_2/" class="next" rel="next" title="自己动手编写tcp/ip协议栈2:tcp包生成">自己动手编写tcp/ip协议栈2:tcp包生成<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+    <div class="post-nav"><a href="/qianz.github.io/posts/route/" class="prev" rel="prev" title="linux route basic tutorial"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>linux route basic tutorial</a>
+            <a href="/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_2/" class="next" rel="next" title="Write TCP/IP Stack by Yourself (2): TCP Packet Generation">Write TCP/IP Stack by Yourself (2): TCP Packet Generation<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.123.7">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/qianz.github.io/zh-cn/" target="_blank">qianz</a></span></div>
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.123.7">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/qianz.github.io/" target="_blank">qianz</a></span></div>
         </div>
     </footer></div>
 
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
                 <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/qianz.github.io/js/theme.min.js"></script><script type="text/javascript">
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/qianz.github.io/js/theme.min.js"></script><script type="text/javascript">
             window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
             gtag('config', 'G-R8VEWR2RP4', { 'anonymize_ip': true });
         </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-R8VEWR2RP4" async></script></body>
