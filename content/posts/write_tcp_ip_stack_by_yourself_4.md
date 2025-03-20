@@ -416,4 +416,4 @@ The main logic is:
 At this point, we've completed the implementation of a simple TCP/IP stack. As a toy implementation, it can already communicate with other TCP/IP stacks.
 The project, including test code, is about 2,000 lines and is quite readable. It can serve as a reference for learning TCP/IP stack. After writing it yourself, the TCP/IP stack won't seem so mysterious anymore.
 If there's a chance later, I'll continue to implement congestion control, retransmission, SYN cookie, and other algorithms, and share them with everyone.
-Again, welcome to star my experimental project [lab](https://github.com/beardnick/lab) and follow my GitHub page [千舟](https://beardnick.github.io/qianz.github.io/zh-cn/). 
+Again, welcome to star my experimental project [lab](https://github.com/beardnick/lab) and follow my GitHub page [qianz](https://beardnick.github.io/qianz.github.io/). 
