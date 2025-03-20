@@ -5,14 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <title>Write TCP/IP Stack by Yourself (4): TCP Data Transfer and Four-Way Handshake - </title><meta name="Description" content="Hugo theme even example site."><meta property="og:title" content="Write TCP/IP Stack by Yourself (4): TCP Data Transfer and Four-Way Handshake" />
-<meta property="og:description" content="Data Transfer Continuing from the previous article, after the connection is established, we begin data transfer. Data Receiver Here&rsquo;s the implementation: handleData 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 func (s *TcpSocket) handleData(tcpPack *tcpip.TcpPack) (resp *tcpip.IPPack, err error) { if tcpPack.Flags&amp;uint8(tcpip.TcpACK) != 0" />
+<meta property="og:description" content="Data Transfer Continuing from the previous article, after the connection is established, we begin data transfer.
+Data Receiver Here&rsquo;s the implementation:
+handleData
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 func (s *TcpSocket) handleData(tcpPack *tcpip.TcpPack) (resp *tcpip.IPPack, err error) { if tcpPack.Flags&amp;uint8(tcpip.TcpACK) != 0 { s." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_4/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2025-02-20T12:22:43+08:00" />
 <meta property="article:modified_time" content="2025-02-20T12:22:43+08:00" /><meta property="og:site_name" content="My cool site" />
 
 <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Write TCP/IP Stack by Yourself (4): TCP Data Transfer and Four-Way Handshake"/>
-<meta name="twitter:description" content="Data Transfer Continuing from the previous article, after the connection is established, we begin data transfer. Data Receiver Here&rsquo;s the implementation: handleData 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 func (s *TcpSocket) handleData(tcpPack *tcpip.TcpPack) (resp *tcpip.IPPack, err error) { if tcpPack.Flags&amp;uint8(tcpip.TcpACK) != 0"/>
+<meta name="twitter:description" content="Data Transfer Continuing from the previous article, after the connection is established, we begin data transfer.
+Data Receiver Here&rsquo;s the implementation:
+handleData
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 func (s *TcpSocket) handleData(tcpPack *tcpip.TcpPack) (resp *tcpip.IPPack, err error) { if tcpPack.Flags&amp;uint8(tcpip.TcpACK) != 0 { s."/>
 <meta name="application-name" content="My cool site">
 <meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -27,7 +33,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself_4\/"
-        },"genre": "posts","wordcount":  1926 ,
+        },"genre": "posts","wordcount":  1924 ,
         "url": "https:\/\/beardnick.github.io\/qianz.github.io\/posts\/write_tcp_ip_stack_by_yourself_4\/","datePublished": "2025-02-20T12:22:43+08:00","dateModified": "2025-02-20T12:22:43+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -75,8 +81,8 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Write TCP/IP Stack by Yourself (4): TCP Data Transfer and Four-Way Handshake</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/qianz.github.io/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>qianz</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-02-20">2025-02-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1926 words&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;4 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-02-20">2025-02-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1924 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;10 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -791,7 +797,7 @@ In Go, you need to call <code>unix.Shutdown(conn, unix.SHUT_WR)</code>. This wil
 <p>At this point, we&rsquo;ve completed the implementation of a simple TCP/IP stack. As a toy implementation, it can already communicate with other TCP/IP stacks.
 The project, including test code, is about 2,000 lines and is quite readable. It can serve as a reference for learning TCP/IP stack. After writing it yourself, the TCP/IP stack won&rsquo;t seem so mysterious anymore.
 If there&rsquo;s a chance later, I&rsquo;ll continue to implement congestion control, retransmission, SYN cookie, and other algorithms, and share them with everyone.
-Again, welcome to star my experimental project <a href="https://github.com/beardnick/lab" target="_blank" rel="noopener noreffer ">lab</a> and follow my GitHub page <a href="https://beardnick.github.io/qianz.github.io/zh-cn/" target="_blank" rel="noopener noreffer ">千舟</a>.</p>
+Again, welcome to star my experimental project <a href="https://github.com/beardnick/lab" target="_blank" rel="noopener noreffer ">lab</a> and follow my GitHub page <a href="https://beardnick.github.io/qianz.github.io/" target="_blank" rel="noopener noreffer ">qianz</a>.</p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
