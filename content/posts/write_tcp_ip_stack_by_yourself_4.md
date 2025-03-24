@@ -1,6 +1,10 @@
 ---
 title: "Write TCP/IP Stack by Yourself (4): TCP Data Transfer and Four-Way Handshake"
 date: 2025-02-20T12:22:43+08:00
+tags:
+  - tcp/ip
+  - network
+  - linux
 ---
 
 # Data Transfer

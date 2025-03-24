@@ -1,6 +1,10 @@
 ---
 title: "自己动手编写tcp/ip协议栈3:tcp三次握手"
 date: 2025-02-19T09:56:13+08:00
+tags:
+  - tcp/ip
+  - network
+  - linux
 ---
 
 # 数据结构

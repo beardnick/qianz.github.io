@@ -1,6 +1,10 @@
 ---
 title: "Write TCP/IP Stack by Yourself (2): TCP Packet Generation"
 date: 2025-02-18T09:59:00+08:00
+tags:
+  - tcp/ip
+  - network
+  - linux
 ---
 
 # Data Structures

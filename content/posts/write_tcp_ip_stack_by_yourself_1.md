@@ -1,6 +1,10 @@
 ---
 title: "Write TCP/IP Stack by Yourself (1): TCP Packet Parsing"
 date: 2025-02-17T15:27:18+08:00
+tags:
+  - tcp/ip
+  - network
+  - linux
 ---
 
 # TunTap

@@ -1,6 +1,10 @@
 ---
 title: "自己动手编写tcp/ip协议栈4:tcp数据传输和四次挥手"
 date: 2025-02-20T12:22:43+08:00
+tags:
+  - tcp/ip
+  - network
+  - linux
 ---
 
 # 数据传输

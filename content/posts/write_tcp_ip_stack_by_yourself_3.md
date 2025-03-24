@@ -1,6 +1,10 @@
 ---
 title: "Write TCP/IP Stack by Yourself (3): TCP Three-Way Handshake"
 date: 2025-02-19T09:56:13+08:00
+tags:
+  - tcp/ip
+  - network
+  - linux
 ---
 
 # Data Structures

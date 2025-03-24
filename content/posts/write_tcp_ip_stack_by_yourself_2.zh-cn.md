@@ -1,6 +1,10 @@
 ---
 title: "自己动手编写tcp/ip协议栈2:tcp包生成"
 date: 2025-02-18T09:59:00+08:00
+tags:
+  - tcp/ip
+  - network
+  - linux
 ---
  
 # 数据结构
