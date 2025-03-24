@@ -2,6 +2,24 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
+            <loc>https://beardnick.github.io/qianz.github.io/zh-cn/tags/linux/</loc><lastmod>2025-02-20T12:22:43&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="en"
+                        href="https://beardnick.github.io/qianz.github.io/tags/linux/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="zh-cn"
+                    href="https://beardnick.github.io/qianz.github.io/zh-cn/tags/linux/"
+                    /></url><url>
+            <loc>https://beardnick.github.io/qianz.github.io/zh-cn/tags/network/</loc><lastmod>2025-02-20T12:22:43&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="en"
+                        href="https://beardnick.github.io/qianz.github.io/tags/network/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="zh-cn"
+                    href="https://beardnick.github.io/qianz.github.io/zh-cn/tags/network/"
+                    /></url><url>
             <loc>https://beardnick.github.io/qianz.github.io/zh-cn/posts/</loc><lastmod>2025-02-20T12:22:43&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
@@ -10,6 +28,24 @@
                     rel="alternate"
                     hreflang="zh-cn"
                     href="https://beardnick.github.io/qianz.github.io/zh-cn/posts/"
+                    /></url><url>
+            <loc>https://beardnick.github.io/qianz.github.io/zh-cn/tags/</loc><lastmod>2025-02-20T12:22:43&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="en"
+                        href="https://beardnick.github.io/qianz.github.io/tags/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="zh-cn"
+                    href="https://beardnick.github.io/qianz.github.io/zh-cn/tags/"
+                    /></url><url>
+            <loc>https://beardnick.github.io/qianz.github.io/zh-cn/tags/tcp/ip/</loc><lastmod>2025-02-20T12:22:43&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="en"
+                        href="https://beardnick.github.io/qianz.github.io/tags/tcp/ip/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="zh-cn"
+                    href="https://beardnick.github.io/qianz.github.io/zh-cn/tags/tcp/ip/"
                     /></url><url>
             <loc>https://beardnick.github.io/qianz.github.io/zh-cn/</loc><lastmod>2025-02-20T12:22:43&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
                         rel="alternate"
@@ -56,15 +92,6 @@
                     hreflang="zh-cn"
                     href="https://beardnick.github.io/qianz.github.io/zh-cn/posts/write_tcp_ip_stack_by_yourself_1/"
                     /></url><url>
-            <loc>https://beardnick.github.io/qianz.github.io/zh-cn/tags/linux/</loc><lastmod>2024-07-07T06:06:52&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
-                        rel="alternate"
-                        hreflang="en"
-                        href="https://beardnick.github.io/qianz.github.io/tags/linux/"
-                        /><xhtml:link
-                    rel="alternate"
-                    hreflang="zh-cn"
-                    href="https://beardnick.github.io/qianz.github.io/zh-cn/tags/linux/"
-                    /></url><url>
             <loc>https://beardnick.github.io/qianz.github.io/zh-cn/posts/route/</loc><lastmod>2024-07-07T06:06:52&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
@@ -82,15 +109,6 @@
                     rel="alternate"
                     hreflang="zh-cn"
                     href="https://beardnick.github.io/qianz.github.io/zh-cn/tags/route/"
-                    /></url><url>
-            <loc>https://beardnick.github.io/qianz.github.io/zh-cn/tags/</loc><lastmod>2024-07-07T06:06:52&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
-                        rel="alternate"
-                        hreflang="en"
-                        href="https://beardnick.github.io/qianz.github.io/tags/"
-                        /><xhtml:link
-                    rel="alternate"
-                    hreflang="zh-cn"
-                    href="https://beardnick.github.io/qianz.github.io/zh-cn/tags/"
                     /></url><url>
             <loc>https://beardnick.github.io/qianz.github.io/zh-cn/categories/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"

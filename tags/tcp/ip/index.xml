@@ -1,9 +1,9 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>Linux - Tag - </title>
-        <link>https://beardnick.github.io/qianz.github.io/tags/linux/</link>
-        <description>Linux - Tag - </description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</lastBuildDate><atom:link href="https://beardnick.github.io/qianz.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+        <title>Tcp/Ip - Tag - </title>
+        <link>https://beardnick.github.io/qianz.github.io/tags/tcp/ip/</link>
+        <description>Tcp/Ip - Tag - </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</lastBuildDate><atom:link href="https://beardnick.github.io/qianz.github.io/tags/tcp/ip/" rel="self" type="application/rss+xml" /><item>
     <title>Write TCP/IP Stack by Yourself (4): TCP Data Transfer and Four-Way Handshake</title>
     <link>https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_4/</link>
     <pubDate>Thu, 20 Feb 2025 12:22:43 &#43;0800</pubDate>
@@ -39,15 +39,6 @@ Dotted arrows represent asynchronous calls, implemented using Go&rsquo;s channel
     <guid>https://beardnick.github.io/qianz.github.io/posts/write_tcp_ip_stack_by_yourself_1/</guid>
     <description><![CDATA[TunTap Since the Linux kernel controls network interfaces, applications cannot directly use network interfaces to handle network packets. Linux provides the tuntap virtual network interface mechanism to allow users to handle raw network packets at the application layer.
 Example of Using TUN TunTap can create two types of virtual network interfaces: TUN and TAP. TAP is a layer 2 network interface that provides MAC frames. TUN is a layer 3 network interface that provides IP packets.]]></description>
-</item>
-<item>
-    <title>linux route basic tutorial</title>
-    <link>https://beardnick.github.io/qianz.github.io/posts/route/</link>
-    <pubDate>Sun, 07 Jul 2024 06:06:52 &#43;0800</pubDate>
-    <author>qianz</author>
-    <guid>https://beardnick.github.io/qianz.github.io/posts/route/</guid>
-    <description><![CDATA[ip rule and ip route the packet is first matched against ip rules and then directed to specific ip table to match ip route rules
-1 2 3 4 5 ip rule # output # 0: from all lookup local # 32766: from all lookup main # 32767: from all lookup default these three rules are created by the kernel the number is the matching priority from all means all packets]]></description>
 </item>
 </channel>
 </rss>
