@@ -278,7 +278,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
       pre = ""
       post = ""
       name = "文章"
-      url = "/posts/"
+      url = "posts/"
       title = ""
     [[languages.zh-cn.menu.main]]
       weight = 2
@@ -286,7 +286,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
       pre = ""
       post = ""
       name = "标签"
-      url = "/tags/"
+      url = "tags/"
       title = ""
     [[languages.zh-cn.menu.main]]
       weight = 3
@@ -294,7 +294,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
       pre = ""
       post = ""
       name = "分类"
-      url = "/categories/"
+      url = "categories/"
       title = ""
     [languages.zh-cn.params.home]
       rss = 10
